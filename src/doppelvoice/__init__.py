@@ -1,3 +1,7 @@
-"""doppelvoice — 中→英实时同传（豆包同声传译 2.0 + 虚拟麦克风）。"""
+"""Doppelvoice — real-time speech-to-speech translation with zero-shot voice cloning.
 
-__version__ = "0.1.0"
+Powered by ByteDance Doubao Seed LiveInterpret 2.0.
+Supports 9 languages: zh / en / ja / id / es / pt / de / fr / zhen (bilingual ZH⇄EN auto).
+"""
+
+__version__ = "0.2.1"

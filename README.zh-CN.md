@@ -7,10 +7,11 @@
 
 [English](README.md) · [架构设计](docs/zh/ARCHITECTURE.md) · [安装使用](docs/zh/SETUP.md) · [故障排查](docs/zh/TROUBLESHOOTING.md)
 
-[![Tests](https://img.shields.io/badge/tests-46%20passed-brightgreen.svg)]()
+[![tests](https://github.com/TianqBu/Doppelvoice/actions/workflows/tests.yml/badge.svg)](https://github.com/TianqBu/Doppelvoice/actions/workflows/tests.yml)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Windows-lightgrey.svg)]()
+[![Release](https://img.shields.io/github/v/release/TianqBu/Doppelvoice)](https://github.com/TianqBu/Doppelvoice/releases/latest)
 
 ---
 
@@ -45,44 +46,31 @@
 
 ## 快速开始
 
-### 1. 装 [VB-Audio Virtual Cable](https://vb-audio.com/Cable/)（必须，免费）
+两种安装方式。**A 方案**最快（不用装 Python）。
 
-下载 → **右键 `VBCABLE_Setup_x64.exe`** → 以管理员运行 → 点 **Install Driver** → **重启**。
+### A 方案 — 直接下载 Windows 二进制（推荐）
 
-### 2. 获取豆包 API 密钥
+1. 装 [VB-Audio Virtual Cable](https://vb-audio.com/Cable/) → 管理员运行安装程序 → 重启电脑。
+2. 从 [Releases 页](https://github.com/TianqBu/Doppelvoice/releases/latest) 下最新的 **`Doppelvoice-vX.Y.Z-win64.zip`**。
+3. 解压到任意目录，文件夹里：复制 `.env.example` → `.env`，填入 `DOUBAO_APP_KEY` / `DOUBAO_ACCESS_KEY`（去[火山引擎控制台](https://console.volcengine.com/speech/app)拿）。
+4. 双击 `Doppelvoice.exe`，GUI 自动打开。
+5. 会议软件里：麦克风选 **`CABLE Output (VB-Audio Virtual Cable)`**。
 
-1. 注册[火山引擎控制台](https://console.volcengine.com/speech/app)
-2. 开通 **同声传译 2.0**（付费服务）
-3. 在密钥页复制 `APP_KEY` 和 `ACCESS_KEY`
-
-### 3. 克隆 & 安装
+### B 方案 — 源码安装（开发者）
 
 ```cmd
-git clone https://github.com/<你的用户名>/Doppelvoice.git
+git clone https://github.com/TianqBu/Doppelvoice.git
 cd Doppelvoice
 python -m venv .venv
-.venv\Scripts\pip install -r requirements.txt
-```
+.venv\Scripts\pip install -e .       :: 从 pyproject.toml 装
+:: 或：.venv\Scripts\pip install -r requirements.txt
 
-### 4. 配置
-
-```cmd
 copy .env.example .env
-notepad .env
-```
+notepad .env       :: 填 DOUBAO_APP_KEY / DOUBAO_ACCESS_KEY
 
-```dotenv
-DOUBAO_APP_KEY=你的AppKey
-DOUBAO_ACCESS_KEY=你的AccessKey
-DOUBAO_RESOURCE_ID=volc.service_type.10053
-```
-
-### 5. 自检 & 启动
-
-```cmd
-check.bat        :: 自检：设备 + API 鉴权 + StartSession
-gui.bat          :: 启动 GUI
-run.bat          :: 命令行模式
+check.bat          :: 自检：设备 + API 鉴权 + StartSession
+gui.bat            :: 启动 GUI
+run.bat            :: 命令行模式
 ```
 
 会议软件里：麦克风选 **`CABLE Output (VB-Audio Virtual Cable)`**。

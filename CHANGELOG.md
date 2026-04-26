@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-04-26
+
+Metadata + tooling clean-up surfaced by post-release audit.
+
+### Fixed
+- `pyproject.toml` was missing 4 required dependencies (`PySide6`, `protobuf`,
+  `qasync`, `soundfile`) — `pip install .` produced an unrunnable install.
+  Now matches `requirements.txt`. Heavy dev-only deps (`grpcio-tools`,
+  `pyinstaller`) split into `[project.optional-dependencies].dev`.
+- Version drift across files:
+  - `pyproject.toml` `version` `0.1.0` → `0.2.1`
+  - `src/doppelvoice/__init__.py` `__version__` `0.1.0` → `0.2.1`
+- `LICENSE` copyright line said "tongchuan contributors" (the pre-rename
+  project name). Now reads "Doppelvoice contributors".
+- `pyproject.toml` description was Chinese-only and still claimed "中→英".
+  Replaced with bilingual-aware English description that correctly lists
+  all 9 supported languages.
+
+### Added
+- GitHub Actions CI (`.github/workflows/tests.yml`): pytest matrix on
+  Windows / Python 3.10 / 3.11 / 3.12 with coverage report upload.
+- `pyproject.toml` now declares `keywords`, `classifiers`, `urls`, and
+  `readme` for proper PyPI / package-index display.
+- README (en + zh) now documents the **pre-built binary** install path
+  alongside the from-source path. Real CI badge replaces the static fake
+  one. Added a `Release` shield linking to the latest GitHub release.
+
 ## [0.2.0] - 2026-04-26
 
 Major code-review sweep: 4 parallel agent reviews (architecture / Python /

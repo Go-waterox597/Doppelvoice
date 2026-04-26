@@ -7,10 +7,11 @@
 
 [中文](README.zh-CN.md) · [Architecture](docs/en/ARCHITECTURE.md) · [Setup](docs/en/SETUP.md) · [Troubleshooting](docs/en/TROUBLESHOOTING.md)
 
-[![Tests](https://img.shields.io/badge/tests-46%20passed-brightgreen.svg)]()
+[![tests](https://github.com/TianqBu/Doppelvoice/actions/workflows/tests.yml/badge.svg)](https://github.com/TianqBu/Doppelvoice/actions/workflows/tests.yml)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Windows-lightgrey.svg)]()
+[![Release](https://img.shields.io/github/v/release/TianqBu/Doppelvoice)](https://github.com/TianqBu/Doppelvoice/releases/latest)
 
 ---
 
@@ -50,44 +51,31 @@ End-to-end latency ≈ 2.5–3 s. Subtitles stream token-by-token; voice is clon
 
 ## Quick start
 
-### 1. Install [VB-Audio Virtual Cable](https://vb-audio.com/Cable/) (required, free)
+Two ways to install. **Option A** is the fastest (no Python needed).
 
-Download → **right-click `VBCABLE_Setup_x64.exe`** → run as administrator → click **Install Driver** → **reboot**.
+### Option A — Pre-built Windows binary (recommended)
 
-### 2. Get Doubao API credentials
+1. Install [VB-Audio Virtual Cable](https://vb-audio.com/Cable/) → run installer as admin → reboot.
+2. Download the latest **`Doppelvoice-vX.Y.Z-win64.zip`** from the [Releases page](https://github.com/TianqBu/Doppelvoice/releases/latest).
+3. Unzip anywhere, then inside the folder: copy `.env.example` → `.env`, fill in `DOUBAO_APP_KEY` / `DOUBAO_ACCESS_KEY` (get them from the [Volcengine Console](https://console.volcengine.com/speech/app)).
+4. Double-click `Doppelvoice.exe`. The GUI opens.
+5. In your meeting app, set the microphone to **`CABLE Output (VB-Audio Virtual Cable)`**.
 
-1. Sign up at the [Volcengine Console](https://console.volcengine.com/speech/app)
-2. Enable **同声传译 2.0** (Simultaneous Interpretation 2.0) — paid service
-3. Copy `APP_KEY` and `ACCESS_KEY` from the credentials page
-
-### 3. Clone & install
+### Option B — From source (for developers)
 
 ```cmd
-git clone https://github.com/<your-username>/Doppelvoice.git
+git clone https://github.com/TianqBu/Doppelvoice.git
 cd Doppelvoice
 python -m venv .venv
-.venv\Scripts\pip install -r requirements.txt
-```
+.venv\Scripts\pip install -e .       :: installs from pyproject.toml
+:: or: .venv\Scripts\pip install -r requirements.txt
 
-### 4. Configure
-
-```cmd
 copy .env.example .env
-notepad .env
-```
+notepad .env       :: fill in DOUBAO_APP_KEY / DOUBAO_ACCESS_KEY
 
-```dotenv
-DOUBAO_APP_KEY=your_app_key
-DOUBAO_ACCESS_KEY=your_access_key
-DOUBAO_RESOURCE_ID=volc.service_type.10053
-```
-
-### 5. Self-check & launch
-
-```cmd
-check.bat        :: verifies devices + API connectivity + StartSession
-gui.bat          :: launches the GUI
-run.bat          :: CLI mode
+check.bat          :: verifies devices + API connectivity + StartSession
+gui.bat            :: launches the GUI
+run.bat            :: CLI mode
 ```
 
 In your meeting app: pick **`CABLE Output (VB-Audio Virtual Cable)`** as the microphone.
