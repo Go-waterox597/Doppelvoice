@@ -4,15 +4,19 @@
 Build:
     .venv\\Scripts\\pyinstaller doppelvoice.spec --clean --noconfirm
 
-Output:
-    dist/Doppelvoice/Doppelvoice.exe (+ deps folder)
+Output (v0.3.0+):
+    dist/Doppelvoice.exe   (single onefile bundle, ~80 MB)
 
 设计选择：
-- onedir 而不是 onefile：启动快 5-10s（onefile 每次解压到 %TEMP%）；
-  且 native dll（libportaudio / libsndfile / soxr_ext）放外面更易诊断
-- console=False：发布时不弹黑窗（开发期把 console=True 看 traceback）
-- 显式收集 _sounddevice_data / _soundfile_data 的 native DLL
-- 显式收集 doppelvoice.engine._pb.* 子模块（避免 PyInstaller 漏分析 protobuf 生成代码）
+- **onefile** since v0.3.0: 一个 .exe，开箱即用。代价是首次启动 7-10s
+  （PyInstaller bootloader 把 _internal/ 解压到 %TEMP%/_MEIxxxxxx/ 再跑）。
+- 数据目录走 %APPDATA%/Doppelvoice/（config.py _resolve_project_root），
+  不在 .exe 同目录写 .env / logs，避免 Program Files 写权限问题。
+- console=False：发布时不弹黑窗（开发期把 console=True 看 traceback）。
+- 显式收集 _sounddevice_data / _soundfile_data 的 native DLL。
+- 显式收集 doppelvoice.engine._pb.* 子模块（PyInstaller 漏分析 protobuf 生成代码）。
+- LICENSE / THIRD_PARTY_LICENSES.md 不再内嵌（onefile 模式下用户拿不到）；
+  改为 release zip 里同级摆放，下载页可见。
 """
 from PyInstaller.utils.hooks import (
     collect_data_files,
@@ -25,11 +29,9 @@ block_cipher = None
 # ── 数据 / 二进制依赖 ─────────────────────────────────────────────────────
 
 binaries = []
-datas = [
-    # LGPL 合规：dist 必须包含 LICENSE + 第三方 license 列表，便于用户拿到分发包后查阅
-    ("LICENSE", "."),
-    ("THIRD_PARTY_LICENSES.md", "."),
-]
+# onefile 模式下数据文件嵌进 .exe 后用户拿不到，所以 LICENSE 不在 datas 里 ——
+# 改在 release zip 中同级摆放（手动复制到 dist/）。
+datas = []
 
 # PortAudio：sounddevice 通过 _sounddevice_data 找 libportaudio*.dll
 binaries += collect_dynamic_libs("_sounddevice_data")
@@ -94,11 +96,13 @@ a = Analysis(
 
 pyz = PYZ(a.pure)
 
+# onefile 模式：所有 binaries / datas 全部塞进单个 .exe，运行时解压到 %TEMP%
 exe = EXE(
     pyz,
     a.scripts,
+    a.binaries,
+    a.datas,
     [],
-    exclude_binaries=True,
     name="Doppelvoice",
     debug=False,
     bootloader_ignore_signals=False,
@@ -110,15 +114,6 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    runtime_tmpdir=None,       # 默认用 %TEMP%
     # icon='docs/images/icon.ico',  # 没图标文件就先注释掉
-)
-
-coll = COLLECT(
-    exe,
-    a.binaries,
-    a.datas,
-    strip=False,
-    upx=False,
-    upx_exclude=[],
-    name="Doppelvoice",
 )

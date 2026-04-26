@@ -25,12 +25,30 @@ from dotenv import load_dotenv
 def _resolve_project_root() -> Path:
     """寻找 .env / logs 等用户级文件的根目录。
 
-    - PyInstaller bundle 模式（`sys.frozen` 为真）：用 .exe 所在目录。
-      用户在 Doppelvoice.exe 同目录放 .env / logs 即可。
+    - PyInstaller bundle 模式（`sys.frozen` 为真）：
+        ① 优先 `%APPDATA%/Doppelvoice/`（标准 Windows 用户数据目录，
+           安装到 Program Files 也能写）
+        ② 向后兼容：如果用户已在 .exe 同目录放过 .env，继续用那里
+           （v0.2.x 默认行为）
+        ③ macOS / Linux frozen：`~/.local/share/doppelvoice/` 或
+           `~/Library/Application Support/Doppelvoice/`
     - 开发模式：源码 src/doppelvoice/config.py → parents[2] = 仓库根。
     """
     if getattr(sys, "frozen", False):
-        return Path(sys.executable).resolve().parent
+        exe_dir = Path(sys.executable).resolve().parent
+        # 向后兼容：v0.2.x 用户的 .env 已经在 exe 同目录 → 继续用那里
+        if (exe_dir / ".env").exists():
+            return exe_dir
+        # 平台标准用户数据目录
+        if sys.platform == "win32":
+            base = Path(os.environ.get("APPDATA", str(Path.home() / "AppData/Roaming")))
+        elif sys.platform == "darwin":
+            base = Path.home() / "Library/Application Support"
+        else:
+            base = Path(os.environ.get("XDG_DATA_HOME", str(Path.home() / ".local/share")))
+        root = base / "Doppelvoice"
+        root.mkdir(parents=True, exist_ok=True)
+        return root
     return Path(__file__).resolve().parents[2]
 
 

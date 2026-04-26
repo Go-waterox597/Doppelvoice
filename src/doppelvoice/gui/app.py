@@ -55,15 +55,24 @@ def main() -> int:
     win = MainWindow(cfg, i18n, theme=theme)
     win.show()
 
-    # 启动预检：VB-Audio Virtual Cable 没装则提示（i18n 表已有但之前从未调用过）
+    # 启动预检：VB-Audio Virtual Cable 没装则弹"下载"对话框
     from doppelvoice.audio import devices as audio_devices
+    from PySide6.QtCore import QUrl
+    from PySide6.QtGui import QDesktopServices
     from PySide6.QtWidgets import QMessageBox
     if audio_devices.find_device("CABLE Input", need_output=True) is None:
-        QMessageBox.warning(
-            win,
-            i18n.t("dialog.error.cable_missing.title"),
-            i18n.t("dialog.error.cable_missing.body"),
+        box = QMessageBox(win)
+        box.setIcon(QMessageBox.Icon.Warning)
+        box.setWindowTitle(i18n.t("dialog.error.cable_missing.title"))
+        box.setText(i18n.t("dialog.error.cable_missing.body"))
+        download_btn = box.addButton(
+            i18n.t("dialog.error.cable_missing.download"),
+            QMessageBox.ButtonRole.AcceptRole,
         )
+        box.addButton(QMessageBox.StandardButton.Close)
+        box.exec()
+        if box.clickedButton() is download_btn:
+            QDesktopServices.openUrl(QUrl("https://vb-audio.com/Cable/"))
 
     if not has_credentials():
         logger.info("no credentials, opening settings dialog")

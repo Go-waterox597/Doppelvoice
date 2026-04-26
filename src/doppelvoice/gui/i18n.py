@@ -99,9 +99,10 @@ TRANSLATIONS: dict[Language, dict[str, str]] = {
         "dialog.error.cable_missing.title": "缺少虚拟音频设备",
         "dialog.error.cable_missing.body": (
             "找不到 CABLE Input 输出设备。\n\n"
-            "请安装 VB-Audio Virtual Cable 并重启电脑：\n"
-            "https://vb-audio.com/Cable/"
+            "请安装 VB-Audio Virtual Cable（免费）并重启电脑后再来。\n"
+            "点下方按钮直接打开下载页。"
         ),
+        "dialog.error.cable_missing.download": "下载 VB-Cable",
         "dialog.about.title": "关于 Doppelvoice",
         "dialog.about.body": (
             "Doppelvoice v{version}\n\n"
@@ -202,10 +203,11 @@ TRANSLATIONS: dict[Language, dict[str, str]] = {
         "dialog.error.no_credentials": "API credentials not configured. Open Settings to enter them.",
         "dialog.error.cable_missing.title": "Virtual audio device missing",
         "dialog.error.cable_missing.body": (
-            "Cannot find CABLE Input output device.\n\n"
-            "Install VB-Audio Virtual Cable and reboot:\n"
-            "https://vb-audio.com/Cable/"
+            "Cannot find the CABLE Input output device.\n\n"
+            "Install VB-Audio Virtual Cable (free) and reboot, then come back.\n"
+            "Click the button below to open the download page."
         ),
+        "dialog.error.cable_missing.download": "Download VB-Cable",
         "dialog.about.title": "About Doppelvoice",
         "dialog.about.body": (
             "Doppelvoice v{version}\n\n"

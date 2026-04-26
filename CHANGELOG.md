@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-04-26
+
+UX overhaul: ship as a single double-click .exe; everything configurable in
+the GUI; no manual file editing required for first-time setup.
+
+### Changed
+- **PyInstaller bundle is now `onefile`** — distribution is a single
+  `Doppelvoice.exe` (~80 MB) instead of a 154 MB folder. First launch
+  takes 7–10 s while the bootloader unpacks `_internal/` to `%TEMP%`;
+  subsequent launches are roughly the same. Trade-off accepted in
+  exchange for a much cleaner "open box" experience.
+- **Data directory moved to `%APPDATA%\Doppelvoice\`** in frozen mode
+  (`~/Library/Application Support/Doppelvoice/` on macOS,
+  `~/.local/share/doppelvoice/` on Linux). The .env file, log files, and
+  any opt-in audio/subtitle dumps live there now. **Backward-compat**:
+  if a `.env` already exists alongside `Doppelvoice.exe` (v0.2.x users),
+  that location keeps being used. Dev-mode (running from source) is
+  unchanged — still uses repo root.
+- **`Doppelvoice.exe` no longer needs a sidecar `.env` file**. On first
+  launch, the Settings dialog opens automatically; saving from there
+  creates the `.env` in `%APPDATA%\Doppelvoice\` with proper atomic-write
+  semantics. The `.env.example` and `README.txt` are still shipped in
+  the release zip for reference but no manual file editing is required.
+
+### Added
+- **"Download VB-Cable" button** in the missing-virtual-audio-device
+  dialog (was previously just a warning with a URL the user had to
+  copy-paste). Single click opens the VB-Audio download page in the
+  default browser.
+
 ## [0.2.3] - 2026-04-26
 
 Tier-1 follow-ups from the v0.2.2 20-agent review that didn't make the
