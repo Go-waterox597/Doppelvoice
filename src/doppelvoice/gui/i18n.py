@@ -119,9 +119,10 @@ TRANSLATIONS: dict[Language, dict[str, str]] = {
         ),
         "dialog.about.title": "关于 Doppelvoice",
         "dialog.about.body": (
-            "Doppelvoice v0.1\n\n"
+            "Doppelvoice v{version}\n\n"
             "你的声音，跨越语言。\n"
-            "端到端实时语音翻译 + 0 样本音色克隆\n\n"
+            "端到端实时语音翻译 + 0 样本音色克隆\n"
+            "支持 9 种语言：中 / 英 / 日 / 印尼 / 西 / 葡 / 德 / 法 + 中英互译\n\n"
             "基于字节豆包同声传译 2.0 (Seed LiveInterpret 2.0)\n"
             "MIT License"
         ),
@@ -237,9 +238,10 @@ TRANSLATIONS: dict[Language, dict[str, str]] = {
         ),
         "dialog.about.title": "About Doppelvoice",
         "dialog.about.body": (
-            "Doppelvoice v0.1\n\n"
+            "Doppelvoice v{version}\n\n"
             "Your voice, in any language.\n"
-            "End-to-end speech-to-speech translation with zero-shot voice cloning.\n\n"
+            "End-to-end speech-to-speech translation with zero-shot voice cloning.\n"
+            "9 languages: zh / en / ja / id / es / pt / de / fr + bilingual ZH⇄EN auto.\n\n"
             "Powered by ByteDance Doubao Simultaneous Interpretation 2.0\n"
             "MIT License"
         ),

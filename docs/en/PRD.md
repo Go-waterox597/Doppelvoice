@@ -1,6 +1,6 @@
 # Doppelvoice — Product Requirements
 
-Version: v0.2.0
+Version: v0.2.1
 Date: 2026-04-26
 Platform: Windows 10/11 (x64)
 
@@ -145,8 +145,15 @@ cross-platform support (macOS / Linux).
 
 ## 10. Roadmap
 
-- **v0.1 (current)**: zh → en S2S CLI/GUI working end-to-end
-- **v0.2**: latency tuning, smarter reconnect, self-check
-- **v0.3**: GUI polish (tray icon, subtitle overlay)
-- **v0.4**: bidirectional translation, hot-word injection
-- **v0.5**: dual-track recording and transcript export
+- **v0.1.0**: CLI/GUI works end-to-end for zh → en S2S (shipped 2026-04-22)
+- **v0.1.1**: Renamed to Doppelvoice + bilingual docs (shipped 2026-04-25)
+- **v0.2.0**: 4-agent code review sweep — 9 languages, device dedup, voice
+  clone tuning, frozen config, log redaction, security hardening, tests
+  3→46, PyInstaller Windows binary (shipped 2026-04-26)
+- **v0.2.1 (current)**: Metadata / CI / docs cleanup — pyproject missing
+  deps fixed, version drift resolved, GitHub Actions CI, README documents
+  binary install path (shipped 2026-04-26)
+- **v0.3**: tray icon + push-to-talk hotkey + subtitle overlay
+- **v0.4**: hot-word injection + dual-track recording + streaming opus
+  decode (kills sentence-end output latency)
+- **v0.5**: cross-platform (macOS / Linux) + AEC3 integration

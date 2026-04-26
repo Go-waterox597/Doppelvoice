@@ -530,8 +530,12 @@ class MainWindow(QMainWindow):
             app.setStyleSheet(stylesheet(theme))
 
     def _show_about(self) -> None:
-        QMessageBox.about(self, self.i18n.t("dialog.about.title"),
-                          self.i18n.t("dialog.about.body"))
+        from doppelvoice import __version__
+        QMessageBox.about(
+            self,
+            self.i18n.t("dialog.about.title"),
+            self.i18n.t("dialog.about.body", version=__version__),
+        )
 
     def _clear_subtitles(self) -> None:
         self.src_view.clear_all()
