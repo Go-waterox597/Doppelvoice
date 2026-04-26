@@ -2,7 +2,7 @@
 
 [English](../en/PRD.md)
 
-版本：v0.2.1
+版本：v0.3.0
 日期：2026-04-26
 平台：Windows 10/11 (x64)
 
@@ -152,8 +152,17 @@
 - **v0.1.1**：项目重命名 Doppelvoice + 双语文档（已完成 2026-04-25）
 - **v0.2.0**：4 路代码审查全包：9 语言 + 设备去重 + 音色克隆调优 + frozen
   config + 日志脱敏 + 协议安全加固 + 测试 3→46 + PyInstaller Windows 二进制（已完成 2026-04-26）
-- **v0.2.1 (当前)**：元数据 / CI / 文档清理：补 pyproject 缺失依赖、版本号同步、
+- **v0.2.1**：元数据 / CI / 文档清理：补 pyproject 缺失依赖、版本号同步、
   GitHub Actions CI、README 双路安装说明（已完成 2026-04-26）
-- **v0.3**：tray icon + push-to-talk 热键 + 字幕 overlay
-- **v0.4**：热词表 + 录音留档 + 流式 opus 解码（消句末延迟）
+- **v0.2.2**：20 路对抗审查 + 一锅端 bug 修复（CRITICAL: opus 无界 / `_HAS_SOXR`
+  缺 import / UTF-8 BOM）+ frozen __post_init__ 校验 + LGPL 合规 + 测试 46→86
+  （已完成 2026-04-26）
+- **v0.2.3**：review tier-1 收尾（Credentials frozen / 字幕单条截断 /
+  env_io _dequote 与 dotenv 对齐）+ 测试 86→93（已完成 2026-04-26）
+- **v0.3.0 (当前)**：UX 大改 — onefile 单 .exe / `%APPDATA%\Doppelvoice\`
+  数据目录 / GUI Settings 写 .env 不需手编 / "下载 VB-Cable" 按钮
+  （已完成 2026-04-26）
+- **v0.4**：tray icon + push-to-talk 热键 + 字幕 overlay
+- **v0.5**：热词表 + 录音留档 + 流式 opus 解码（消句末延迟）
+- **v0.6**：跨平台（macOS / Linux）+ AEC3 集成
 - **v0.5**：跨平台（macOS / Linux）+ AEC3 集成

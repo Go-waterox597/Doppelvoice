@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Documented
+- README (en + zh): description + ASCII diagram now reflect 9-language
+  support instead of the old "Chinese → English" framing left over from
+  v0.1.x. Both READMEs now show `<source lang> → <target lang>` and list
+  the 9 codes inline.
+- `docs/{en,zh}/PRD.md`: bumped Version header from v0.2.1 to v0.3.0;
+  scenario table no longer assumes Chinese-as-source / English-as-target;
+  acceptance checklist mentions `Doppelvoice.exe` instead of `gui.bat`;
+  roadmap fills in v0.2.1 / v0.2.2 / v0.2.3 / v0.3.0 entries that were
+  absent.
+- `docs/{en,zh}/SETUP.md`: rewritten as **Path A (binary)** + **Path B
+  (source)**. Path A walks through download → unzip → double-click → fill
+  Settings dialog (no `.env` editing required). Path B keeps the
+  `pip install -e ".[dev]"` dev workflow. Cross-language link is added
+  in both files.
+- `cli.py` `argparse` description: was Chinese-only "中→英实时同传…",
+  now an English summary that lists all 9 languages. Affects
+  `Doppelvoice.exe --help` output.
+
+(No source code behavior changes vs v0.3.0 — strictly description /
+documentation drift cleanup. Will fold into the next release.)
+
 ## [0.3.0] - 2026-04-26
 
 UX overhaul: ship as a single double-click .exe; everything configurable in

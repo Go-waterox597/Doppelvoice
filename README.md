@@ -1,7 +1,10 @@
 # Doppelvoice
 
 > **Your voice, in any language.**
-> Real-time speech-to-speech translation with zero-shot voice cloning. The other party hears **English in your own voice** through any meeting app — Zoom, Teams, Google Meet, OBS, anything that takes a microphone.
+> Real-time speech-to-speech translation with zero-shot voice cloning across **9 languages**
+> (Chinese / English / Japanese / Indonesian / Spanish / Portuguese / German / French + bilingual ZH⇄EN auto).
+> The other party hears **the target language in your own voice** through any meeting app —
+> Zoom, Teams, WeChat, Google Meet, OBS, anything that takes a microphone.
 >
 > _Powered by ByteDance Doubao Seed LiveInterpret 2.0._
 
@@ -18,12 +21,15 @@
 ## What it does
 
 ```
-You speak Chinese  ─►  Doppelvoice  ─►  Peer hears English (in your voice)
-   ┌──────────┐         ┌─────────┐        ┌──────────────────────────────┐
-   │ your mic │  ──►    │ Doubao  │  ──►   │ virtual mic → Zoom / Teams … │
-   └──────────┘         │ AST 2.0 │        └──────────────────────────────┘
-                        └─────────┘
+You speak <source lang>  ─►  Doppelvoice  ─►  Peer hears <target lang> (in your voice)
+   ┌──────────────────┐       ┌─────────┐       ┌──────────────────────────────┐
+   │     your mic     │ ────► │ Doubao  │ ────► │ virtual mic → Zoom / Teams … │
+   └──────────────────┘       │ AST 2.0 │       └──────────────────────────────┘
+                              └─────────┘
 ```
+
+Pick any of 9 source/target language codes (`zh / en / ja / id / es / pt / de / fr`)
+or use `zhen` on both sides for bilingual ZH⇄EN auto-detection.
 
 End-to-end latency ≈ 2.5–3 s. Subtitles stream token-by-token; voice is cloned zero-shot from your speech as you talk.
 

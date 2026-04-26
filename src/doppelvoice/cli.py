@@ -16,7 +16,12 @@ from doppelvoice.utils.log import setup_logging
 def _make_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         prog="doppelvoice",
-        description="中→英实时同传（豆包 Seed LiveInterpret 2.0 + 虚拟麦克风）",
+        description=(
+            "Doppelvoice — real-time speech-to-speech translation with zero-shot "
+            "voice cloning across 9 languages (zh/en/ja/id/es/pt/de/fr + zhen "
+            "bilingual ZH⇄EN auto), powered by Doubao Seed LiveInterpret 2.0 + "
+            "VB-Audio Virtual Cable."
+        ),
     )
     p.add_argument("--gui", action="store_true", help="启动图形界面")
     p.add_argument("--check", action="store_true", help="自检：列出设备+测试 API 连通")

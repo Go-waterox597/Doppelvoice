@@ -1,6 +1,8 @@
 # Doppelvoice — Product Requirements
 
-Version: v0.2.1
+[中文](../zh/PRD.md)
+
+Version: v0.3.0
 Date: 2026-04-26
 Platform: Windows 10/11 (x64)
 
@@ -27,17 +29,17 @@ cross-platform support (macOS / Linux).
 
 | Scenario | Usage |
 |---|---|
-| Cross-border video meetings | Speak Chinese, peers hear English |
-| Overseas livestream | Audience on the stream hears English |
-| Interviews / pitch demos | Speak Chinese for fluency, judges hear English |
-| Hybrid lecture | Speak Chinese on stage; remote Zoom audience hears English |
+| Cross-border video meetings | Speak any of 9 supported languages; peer hears the target language in your voice |
+| Overseas livestream | Audience on the stream hears your target-language stream in your own voice |
+| Interviews / pitch demos | Speak fluently in your native language; judges hear the target |
+| Hybrid lecture | Speak on stage; remote audience hears the configured target language |
 
 ## 3. Functional Requirements (MVP)
 
 ### 3.1 Required
 - **F1**: Capture audio from default mic (or a user-chosen device).
 - **F2**: Stream-translate via Doubao Seed LiveInterpret 2.0 (`ast/v2/translate`) WebSocket in S2S mode.
-- **F3**: Receive English PCM/Opus audio that retains the user's voice.
+- **F3**: Receive target-language PCM/Opus audio that retains the user's voice (zero-shot clone).
 - **F4**: Write audio to a Windows virtual sound device (VB-Audio Virtual Cable's `CABLE Input`) so any meeting app can pick it as a microphone.
 - **F5**: CLI launcher; one-click `gui.bat`.
 - **F6**: Live metrics: latency, bytes sent/received, session state, errors.
@@ -109,7 +111,7 @@ cross-platform support (macOS / Linux).
                               Zoom/Teams/etc. select "CABLE Output" as microphone
                                                             │
                                                             ▼
-                                                       Peer hears English
+                                            Peer hears the target language (in your voice)
 ```
 
 ## 7. Key Design Decisions
@@ -127,11 +129,11 @@ cross-platform support (macOS / Linux).
 
 ## 8. Acceptance
 
-- [ ] `python -m doppelvoice --check` lists CABLE Input and passes its tests.
-- [ ] Run `gui.bat`, speak Chinese, peer in Zoom hears English.
+- [ ] `Doppelvoice.exe --check` (or `python -m doppelvoice --check` from source) lists CABLE Input and passes its tests.
+- [ ] Run `Doppelvoice.exe`, speak the source language, peer in Zoom hears the target language in your voice.
 - [ ] After 10 minutes of continuous chat, latency stays ≤ 3 s.
 - [ ] Disconnecting the network for 10 s and reconnecting recovers automatically.
-- [ ] Ctrl+C cleanly tears everything down.
+- [ ] Ctrl+C / closing the window cleanly tears everything down.
 
 ## 9. Risks & Mitigations
 
@@ -150,10 +152,20 @@ cross-platform support (macOS / Linux).
 - **v0.2.0**: 4-agent code review sweep — 9 languages, device dedup, voice
   clone tuning, frozen config, log redaction, security hardening, tests
   3→46, PyInstaller Windows binary (shipped 2026-04-26)
-- **v0.2.1 (current)**: Metadata / CI / docs cleanup — pyproject missing
-  deps fixed, version drift resolved, GitHub Actions CI, README documents
-  binary install path (shipped 2026-04-26)
-- **v0.3**: tray icon + push-to-talk hotkey + subtitle overlay
-- **v0.4**: hot-word injection + dual-track recording + streaming opus
+- **v0.2.1**: Metadata / CI / docs cleanup — pyproject missing deps fixed,
+  version drift resolved, GitHub Actions CI, README documents binary
+  install path (shipped 2026-04-26)
+- **v0.2.2**: 20-agent adversarial sweep + bug fixes (CRITICAL: opus
+  unbounded / `_HAS_SOXR` missing import / UTF-8 BOM) + frozen
+  `__post_init__` validation + LGPL compliance + tests 46→86
+  (shipped 2026-04-26)
+- **v0.2.3**: review tier-1 follow-ups (Credentials frozen / SubtitleView
+  per-block clamp / env_io `_dequote` aligned with python-dotenv) +
+  tests 86→93 (shipped 2026-04-26)
+- **v0.3.0 (current)**: UX overhaul — single-file `.exe` (onefile),
+  `%APPDATA%\Doppelvoice\` data dir, GUI Settings writes `.env` (no
+  manual editing), "Download VB-Cable" button (shipped 2026-04-26)
+- **v0.4**: tray icon + push-to-talk hotkey + subtitle overlay
+- **v0.5**: hot-word injection + dual-track recording + streaming opus
   decode (kills sentence-end output latency)
-- **v0.5**: cross-platform (macOS / Linux) + AEC3 integration
+- **v0.6**: cross-platform (macOS / Linux) + AEC3 integration
