@@ -7,27 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-04-26
+
+Documentation drift cleanup driven by user audit of the GitHub README
+page — every "Chinese → English" framing left over from v0.1.x is
+gone. **No code behavior changes** vs v0.3.0 (the `.exe` binary is
+re-cut only so `Doppelvoice.exe --help` reflects the new description
+string and bundled `__version__` reads `0.3.1`).
+
 ### Documented
-- README (en + zh): description + ASCII diagram now reflect 9-language
-  support instead of the old "Chinese → English" framing left over from
-  v0.1.x. Both READMEs now show `<source lang> → <target lang>` and list
-  the 9 codes inline.
-- `docs/{en,zh}/PRD.md`: bumped Version header from v0.2.1 to v0.3.0;
+- README (en + zh): tagline + ASCII diagram now reflect 9-language
+  support instead of the old "Chinese → English" framing. Both READMEs
+  show `<source lang> → <target lang>` and inline-list the 9 codes.
+- `docs/{en,zh}/PRD.md`: bumped Version header from v0.2.1 to v0.3.1;
   scenario table no longer assumes Chinese-as-source / English-as-target;
   acceptance checklist mentions `Doppelvoice.exe` instead of `gui.bat`;
   roadmap fills in v0.2.1 / v0.2.2 / v0.2.3 / v0.3.0 entries that were
   absent.
 - `docs/{en,zh}/SETUP.md`: rewritten as **Path A (binary)** + **Path B
-  (source)**. Path A walks through download → unzip → double-click → fill
-  Settings dialog (no `.env` editing required). Path B keeps the
-  `pip install -e ".[dev]"` dev workflow. Cross-language link is added
+  (source)**. Path A walks through download → unzip → double-click →
+  fill Settings dialog (no `.env` editing required). Path B keeps the
+  `pip install -e ".[dev]"` dev workflow. Cross-language link added
   in both files.
 - `cli.py` `argparse` description: was Chinese-only "中→英实时同传…",
   now an English summary that lists all 9 languages. Affects
   `Doppelvoice.exe --help` output.
-
-(No source code behavior changes vs v0.3.0 — strictly description /
-documentation drift cleanup. Will fold into the next release.)
+- `pyproject.toml` / `__init__.py` bumped to `0.3.1`.
 
 ## [0.3.0] - 2026-04-26
 

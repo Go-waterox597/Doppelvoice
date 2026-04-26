@@ -2,11 +2,9 @@
 
 [中文](../zh/PRD.md)
 
-Version: v0.3.0
+Version: v0.3.1
 Date: 2026-04-26
 Platform: Windows 10/11 (x64)
-
-[中文](../zh/PRD.md)
 
 ---
 
@@ -162,9 +160,11 @@ cross-platform support (macOS / Linux).
 - **v0.2.3**: review tier-1 follow-ups (Credentials frozen / SubtitleView
   per-block clamp / env_io `_dequote` aligned with python-dotenv) +
   tests 86→93 (shipped 2026-04-26)
-- **v0.3.0 (current)**: UX overhaul — single-file `.exe` (onefile),
+- **v0.3.0**: UX overhaul — single-file `.exe` (onefile),
   `%APPDATA%\Doppelvoice\` data dir, GUI Settings writes `.env` (no
   manual editing), "Download VB-Cable" button (shipped 2026-04-26)
+- **v0.3.1 (current)**: doc-drift cleanup + cli `--help` description
+  rewritten to list all 9 languages (shipped 2026-04-26)
 - **v0.4**: tray icon + push-to-talk hotkey + subtitle overlay
 - **v0.5**: hot-word injection + dual-track recording + streaming opus
   decode (kills sentence-end output latency)
