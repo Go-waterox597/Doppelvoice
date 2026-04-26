@@ -71,3 +71,28 @@ def test_drain_dump_path_parent_created(tmp_path):
     assert result == b""
     # parent dir was created and the raw blob was written before decode attempt
     assert out_path.parent.exists()
+
+
+# ── v0.2.3: max-buffer guard against malicious server (sentence_end never fires) ──
+
+def test_feed_drops_when_exceeding_max_buf():
+    """If accumulated bytes would exceed MAX_BUF_BYTES, all chunks are dropped
+    to defeat OOM via TTSSentenceStart-without-TTSSentenceEnd attack."""
+    d = OggOpusDecoder()
+    # First feed gets us close to the cap
+    near_cap = OggOpusDecoder.MAX_BUF_BYTES - 100
+    d.feed(b"x" * near_cap)
+    assert d.size() == near_cap
+    # Next feed would push us over — should clear ALL accumulated chunks
+    d.feed(b"y" * 200)
+    assert d.size() == 0
+    assert not d.has_data()
+
+
+def test_feed_normal_chunks_stay_under_cap():
+    """Real-world chunks (a few KB) accumulate without trip."""
+    d = OggOpusDecoder()
+    for _ in range(100):
+        d.feed(b"x" * 5_000)  # 100 × 5KB = 500KB << 64MB cap
+    assert d.size() == 500_000
+    assert d.has_data()

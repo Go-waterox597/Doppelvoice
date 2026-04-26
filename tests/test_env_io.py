@@ -101,3 +101,35 @@ def test_has_credentials_true_when_both_present(tmp_path):
     p.write_text("DOUBAO_APP_KEY=ak\nDOUBAO_ACCESS_KEY=sk\n", encoding="utf-8")
     with _patch_env_path(tmp_path):
         assert env_io.has_credentials() is True
+
+
+# ── _dequote (v0.2.3 fix: align with python-dotenv) ────────────────────────────
+
+def test_dequote_matched_double():
+    assert env_io._dequote('"hello"') == "hello"
+
+
+def test_dequote_matched_single():
+    assert env_io._dequote("'hello'") == "hello"
+
+
+def test_dequote_unmatched_keeps_chars():
+    """Old behavior was to greedily strip both quote types — wrong."""
+    # `"'weird'"` has matched outer ", inner '. dotenv strips ONLY the outer pair.
+    assert env_io._dequote("\"'weird'\"") == "'weird'"
+
+
+def test_dequote_preserves_inner_padding():
+    """Old `.strip().strip('"')` exposed inner spaces; dotenv preserves them."""
+    assert env_io._dequote('"  spaced  "') == "  spaced  "
+
+
+def test_read_env_handles_utf8_bom(tmp_path):
+    """v0.2.2 fix: Notepad's default UTF-8 BOM should not corrupt key names."""
+    p = tmp_path / ".env"
+    # Write with explicit BOM
+    p.write_bytes(b"\xef\xbb\xbfDOUBAO_APP_KEY=value\n")
+    with _patch_env_path(tmp_path):
+        result = env_io.read_env()
+    assert "DOUBAO_APP_KEY" in result  # NOT "\ufeffDOUBAO_APP_KEY"
+    assert result["DOUBAO_APP_KEY"] == "value"

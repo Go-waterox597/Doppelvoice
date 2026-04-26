@@ -59,11 +59,16 @@ def test_snapshot_isolates_subsequent_swaps():
     assert cfg.audio.chunk_ms == 999
 
 
-def test_credentials_still_mutable():
-    """Credentials 还是可变的（运行时回灌密钥）。"""
+def test_credentials_is_frozen():
+    """v0.2.3：Credentials 也改 frozen，防止 snapshot 后的就地修改污染会话。
+    覆写必须走 dataclasses.replace。"""
     c = Credentials(app_key="x", access_key="y")
-    c.app_key = "z"
-    assert c.app_key == "z"
+    with pytest.raises(FrozenInstanceError):
+        c.app_key = "z"  # type: ignore[misc]
+    # replace 路径仍可用
+    c2 = replace(c, app_key="z")
+    assert c2.app_key == "z"
+    assert c.app_key == "x"  # 原对象不变
 
 
 def test_default_denoise_is_false():

@@ -438,9 +438,14 @@ class MainWindow(QMainWindow):
         # 同步 .env 里的密钥到 cfg（用户可能在设置对话框里改过）
         from doppelvoice.gui.env_io import read_env
         env = read_env()
-        self.cfg.credentials.app_key = env.get("DOUBAO_APP_KEY", self.cfg.credentials.app_key)
-        self.cfg.credentials.access_key = env.get("DOUBAO_ACCESS_KEY", self.cfg.credentials.access_key)
-        self.cfg.credentials.resource_id = env.get("DOUBAO_RESOURCE_ID", self.cfg.credentials.resource_id)
+        # Credentials 是 frozen — 用 replace 整体换。Orchestrator __init__ 后才 snapshot，
+        # 所以这里在 Orchestrator 创建之前 swap 是安全的。
+        self.cfg.credentials = replace(
+            self.cfg.credentials,
+            app_key=env.get("DOUBAO_APP_KEY", self.cfg.credentials.app_key),
+            access_key=env.get("DOUBAO_ACCESS_KEY", self.cfg.credentials.access_key),
+            resource_id=env.get("DOUBAO_RESOURCE_ID", self.cfg.credentials.resource_id),
+        )
 
         self.orchestrator = Orchestrator(self.cfg, event_bus=self.bus)
         self._set_running_state(True)

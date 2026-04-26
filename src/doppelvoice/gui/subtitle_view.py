@@ -15,6 +15,16 @@ class SubtitleView(QTextEdit):
     # 字幕历史 paragraph 上限：长跑会话防 QTextDocument 无界增长。
     # 一句字幕 = 一个 block；2000 句 ~= 几小时使用，超出从头 FIFO 丢弃。
     MAX_BLOCKS = 2000
+    # 单条字幕字符数上限：服务端理论上可发 4MB string（protobuf 字段无长度限制），
+    # QTextDocument 对超长单 block 是 O(n²) layout —— 截断到 4096 字符防止
+    # 恶意/坏数据导致 GUI 渲染卡死。一句正常翻译 < 200 字符。
+    MAX_CHARS_PER_BLOCK = 4096
+
+    @classmethod
+    def _clamp(cls, text: str) -> str:
+        if len(text) <= cls.MAX_CHARS_PER_BLOCK:
+            return text
+        return text[: cls.MAX_CHARS_PER_BLOCK] + "…"
 
     def __init__(self, title_color: str = "#1e90ff"):
         super().__init__()
@@ -70,6 +80,7 @@ class SubtitleView(QTextEdit):
         self.ensureCursorVisible()
 
     def feed(self, text: str, is_definite: bool) -> None:
+        text = self._clamp(text)
         if is_definite:
             self.append_definite(text)
         else:

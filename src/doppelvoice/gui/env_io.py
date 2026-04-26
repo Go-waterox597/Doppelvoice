@@ -12,6 +12,21 @@ def env_path() -> Path:
     return PROJECT_ROOT / ".env"
 
 
+def _dequote(value: str) -> str:
+    """只剥离一对**匹配的**首尾引号，保留内部空格。
+
+    之前的 `.strip().strip('"').strip("'")` 三连会：
+      - 把不匹配的引号也吃掉（`"'weird'"` 会变 `weird`，dotenv 是 `'weird'`）
+      - 内部 padding 被外层 strip 暴露后再次脱掉（`"  spaced  "` 变 `  spaced  `
+        而 dotenv 给 `spaced`）
+    现在严格遵守 python-dotenv 行为：只匹配成对引号，否则原样返回。
+    """
+    s = value.strip()
+    if len(s) >= 2 and s[0] == s[-1] and s[0] in ("'", '"'):
+        return s[1:-1]
+    return s
+
+
 def read_env() -> dict[str, str]:
     p = env_path()
     if not p.exists():
@@ -24,7 +39,7 @@ def read_env() -> dict[str, str]:
         if "=" not in line:
             continue
         k, _, v = line.partition("=")
-        out[k.strip()] = v.strip().strip('"').strip("'")
+        out[k.strip()] = _dequote(v)
     return out
 
 

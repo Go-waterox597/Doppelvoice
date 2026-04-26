@@ -37,8 +37,11 @@ def _resolve_project_root() -> Path:
 PROJECT_ROOT = _resolve_project_root()
 
 
-@dataclass
+@dataclass(frozen=True)
 class Credentials:
+    """API 凭据。frozen 防止 GUI 中途就地修改污染正在跑会话的 snapshot：
+    所有覆写必须走 `cfg.credentials = replace(cfg.credentials, app_key=...)`，
+    Orchestrator 拍 snapshot 后即与 GUI 后续修改隔离。"""
     app_key: str
     access_key: str
     resource_id: str = "volc.service_type.10053"

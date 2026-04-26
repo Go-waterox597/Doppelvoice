@@ -7,6 +7,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.3] - 2026-04-26
+
+Tier-1 follow-ups from the v0.2.2 20-agent review that didn't make the
+first cut. Tests 86 → 93. No behavior changes for normal usage.
+
+### Fixed
+- **`Credentials` is now `frozen=True`** (was the one mutable sub-config
+  that escaped the v0.2.0 frozen sweep). Previously `cfg.credentials =
+  replace(cfg.credentials, ...)` was the contract everywhere except for
+  3 sites that did `cfg.credentials.app_key = ...` in-place — and
+  because `AppConfig.snapshot()` is a shallow copy, those in-place
+  writes leaked into already-running orchestrator sessions. Now all
+  callers use `replace()` and the type system enforces it.
+- **`SubtitleView` clamps each block to 4096 chars** (`MAX_CHARS_PER_BLOCK`).
+  QTextDocument layout is O(n²) on a single huge run; a malicious or
+  buggy server sending a 4 MB `text` field would freeze the GUI thread.
+- **`gui/env_io.py` `_dequote` matches python-dotenv exactly.** The old
+  `.strip().strip('"').strip("'")` chain was buggy in two ways:
+  unmatched quotes were eaten greedily (`"'weird'"` → `weird` instead
+  of `'weird'`); and inner padding leaked when the outer strip exposed
+  it (`"  spaced  "` → `  spaced  ` instead of `spaced`). The GUI
+  display path now agrees with what `Credentials.from_env` actually
+  loads at runtime — no more "GUI shows X, server gets Y" divergence.
+- **`utils/log.py` `_patcher` no longer silently swallows** exception-arg
+  rewriting failures — falls through to `sys.stderr` directly (cannot
+  use loguru without recursing into the patcher itself).
+
+### Tests
+- New `OggOpusDecoder` `MAX_BUF_BYTES` guard tests.
+- New `_dequote` parity tests (matched/unmatched/inner-padding).
+- New UTF-8 BOM round-trip test for `read_env`.
+- Updated `test_credentials_is_frozen` to assert `FrozenInstanceError`
+  + verify `replace` path still works.
+
 ## [0.2.2] - 2026-04-26
 
 20-agent adversarial sweep (architect / security / performance / Python /

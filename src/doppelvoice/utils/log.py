@@ -59,8 +59,10 @@ def _patcher(record: dict) -> None:
             exc.value.args = tuple(
                 _redact(a) if isinstance(a, str) else a for a in exc.value.args
             )
-        except Exception:
-            pass
+        except Exception as e:
+            # 不能用 loguru（会递归触发本 patcher），直接走 stderr
+            import sys
+            sys.stderr.write(f"[log._patcher] redact exception args failed: {e!r}\n")
 
 
 def setup_logging(log_dir: Path, level: str = "INFO") -> None:

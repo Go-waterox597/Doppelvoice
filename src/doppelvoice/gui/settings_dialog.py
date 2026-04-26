@@ -339,9 +339,12 @@ class SettingsDialog(QDialog):
         )
 
         # 把新密钥写回 cfg.credentials，避免重启
-        self.cfg.credentials.app_key = updates["DOUBAO_APP_KEY"]
-        self.cfg.credentials.access_key = updates["DOUBAO_ACCESS_KEY"]
-        self.cfg.credentials.resource_id = updates["DOUBAO_RESOURCE_ID"]
+        self.cfg.credentials = replace(
+            self.cfg.credentials,
+            app_key=updates["DOUBAO_APP_KEY"],
+            access_key=updates["DOUBAO_ACCESS_KEY"],
+            resource_id=updates["DOUBAO_RESOURCE_ID"],
+        )
 
         self.settings_saved.emit()
         QMessageBox.information(self, self.i18n.t("settings.title"), self.i18n.t("settings.saved"))
