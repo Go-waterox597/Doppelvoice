@@ -74,6 +74,27 @@ class AudioConfig:
     output_format: str = "ogg_opus"               # 豆包 target_audio.format: 默认 ogg_opus（pcm 实测未响应）
     keepalive_ms: int = 80                        # 无人声时发送静音包维持会话
 
+    def __post_init__(self) -> None:
+        # 防御非法值：frozen 后用 ValueError 失败比下游 PortAudio 报-9997 友好
+        if self.input_sample_rate <= 0:
+            raise ValueError(f"input_sample_rate must be > 0, got {self.input_sample_rate}")
+        if self.output_sample_rate <= 0:
+            raise ValueError(f"output_sample_rate must be > 0, got {self.output_sample_rate}")
+        if self.chunk_ms <= 0:
+            raise ValueError(f"chunk_ms must be > 0, got {self.chunk_ms}")
+        if self.jitter_buffer_ms < 0:
+            raise ValueError(f"jitter_buffer_ms must be >= 0, got {self.jitter_buffer_ms}")
+        if self.channels not in (1, 2):
+            raise ValueError(f"channels must be 1 or 2, got {self.channels}")
+        if self.bits not in (16, 24, 32):
+            raise ValueError(f"bits must be 16/24/32, got {self.bits}")
+        if not 0.0 <= self.silence_rms_threshold <= 1.0:
+            raise ValueError(
+                f"silence_rms_threshold must be in [0,1], got {self.silence_rms_threshold}"
+            )
+        if self.output_format not in ("ogg_opus", "pcm"):
+            raise ValueError(f"output_format must be ogg_opus or pcm, got {self.output_format!r}")
+
 
 @dataclass(frozen=True)
 class TranslationConfig:
@@ -98,6 +119,19 @@ class NetworkConfig:
     reconnect_base_s: float = 1.0
     reconnect_max_s: float = 30.0
     reconnect_max_retries: int = 0                # 0 = 无限
+
+    def __post_init__(self) -> None:
+        if self.connect_timeout_s <= 0:
+            raise ValueError(f"connect_timeout_s must be > 0, got {self.connect_timeout_s}")
+        if self.reconnect_base_s <= 0:
+            raise ValueError(f"reconnect_base_s must be > 0, got {self.reconnect_base_s}")
+        if self.reconnect_max_s < self.reconnect_base_s:
+            raise ValueError(
+                f"reconnect_max_s ({self.reconnect_max_s}) must be >= "
+                f"reconnect_base_s ({self.reconnect_base_s})"
+            )
+        if self.reconnect_max_retries < 0:
+            raise ValueError(f"reconnect_max_retries must be >= 0, got {self.reconnect_max_retries}")
 
 
 @dataclass

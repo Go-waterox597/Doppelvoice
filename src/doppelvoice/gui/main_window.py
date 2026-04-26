@@ -292,8 +292,13 @@ class MainWindow(QMainWindow):
             self.src_wrap_label.setText(i.t("subtitle.source"))
         if self.tgt_wrap_label is not None:
             self.tgt_wrap_label.setText(i.t("subtitle.target"))
-        cur_state = str(self.status_badge.property("state") or "idle")
-        self.status_badge.set_state(cur_state, i.t(f"status.{cur_state}"))
+        # 状态徽章重绘：state property 是映射后的值（idle/busy/running/error），
+        # 但 i18n 表里只有 idle/running/error 等"原始 key"。直接读 status_key 才能查到翻译。
+        cur_key = str(self.status_badge.property("status_key") or "idle")
+        self.status_badge.set_state(
+            self.status_badge.property("state") or "idle",
+            i.t(f"status.{cur_key}"),
+        )
         # 语言下拉显示文本随 UI 语言更新
         if hasattr(self, "src_lang") and self.src_lang.count() > 0:
             self._populate_language_combos()
@@ -377,14 +382,14 @@ class MainWindow(QMainWindow):
             self.input_dev.addItem(u.name, u.name)
             self.input_dev.setItemData(
                 self.input_dev.count() - 1,
-                f"{u.name}\n后端: {u.chosen_hostapi} · {int(u.default_samplerate)}Hz",
+                f"{u.name}\n{self.i18n.t('device.tooltip.backend')}: {u.chosen_hostapi} · {int(u.default_samplerate)}Hz",
                 Qt.ItemDataRole.ToolTipRole,
             )
         for u in audio_devices.list_unique_devices("output"):
             self.output_dev.addItem(u.name, u.name)
             self.output_dev.setItemData(
                 self.output_dev.count() - 1,
-                f"{u.name}\n后端: {u.chosen_hostapi} · {int(u.default_samplerate)}Hz",
+                f"{u.name}\n{self.i18n.t('device.tooltip.backend')}: {u.chosen_hostapi} · {int(u.default_samplerate)}Hz",
                 Qt.ItemDataRole.ToolTipRole,
             )
         if self.cfg.audio.input_device:
@@ -475,6 +480,10 @@ class MainWindow(QMainWindow):
         for w in (self.src_lang, self.tgt_lang, self.input_dev, self.output_dev,
                   self.refresh_btn, self.settings_btn):
             w.setEnabled(not running)
+        # 菜单 File → Settings 也跟随禁用，避免运行中改 cfg 让用户误以为生效
+        # （cfg 已 snapshot 给 orchestrator，本会话不会受影响，下次启动才生效）
+        if hasattr(self, "act_settings"):
+            self.act_settings.setEnabled(not running)
 
     # ── Bus 回调 ──
     def _count_sentence(self, text: str, is_definite: bool) -> None:
@@ -498,6 +507,8 @@ class MainWindow(QMainWindow):
         state = state_map.get(key, "busy")
         display = msg or self.i18n.t(f"status.{key}")
         self.status_badge.set_state(state, display)
+        # 同时记下原始 key，给 _apply_translations 切语言时反查 i18n 用
+        self.status_badge.setProperty("status_key", key)
 
     def _tick_metrics(self) -> None:
         # 电平：未启动时为 0；启动后从 orchestrator 内部 capture 取
@@ -545,6 +556,11 @@ class MainWindow(QMainWindow):
 
     # ── 关闭 ──
     def closeEvent(self, event):  # noqa: N802
+        # 第一时间停 metrics timer：避免 _tick_metrics 在 capture stop 后访问 stale 引用
+        try:
+            self._metrics_timer.stop()
+        except Exception:
+            pass
         # 已经在退出过程中：直接接受第二次的 close 事件，不再弹确认框
         if self._quitting:
             event.accept()

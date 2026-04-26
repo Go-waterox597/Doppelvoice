@@ -1,7 +1,9 @@
-"""配置 frozen + snapshot 行为单元测试。"""
+"""配置 frozen + snapshot + AppConfig.load env-var 覆盖 单元测试。"""
 from __future__ import annotations
 
+import os
 from dataclasses import FrozenInstanceError, replace
+from unittest.mock import patch
 
 import pytest
 
@@ -74,3 +76,63 @@ def test_default_silence_threshold_is_zero():
     """B-perf #silence：默认关闭客户端 VAD。"""
     a = AudioConfig()
     assert a.silence_rms_threshold == 0.0
+
+
+# ── AppConfig.load env-var overrides (config.py lines 118-149) ───────────────
+
+def _fake_credentials():
+    return Credentials(app_key="k", access_key="s")
+
+
+def _make_load_env(monkeypatch, extra_env: dict):
+    """Patch Credentials.from_env and os.getenv so AppConfig.load is testable."""
+    monkeypatch.setattr(
+        "doppelvoice.config.Credentials.from_env",
+        staticmethod(_fake_credentials),
+    )
+    env = {
+        "DOUBAO_APP_KEY": "k",
+        "DOUBAO_ACCESS_KEY": "s",
+        **extra_env,
+    }
+    monkeypatch.setattr("doppelvoice.config.load_dotenv", lambda *a, **kw: None)
+    for key, val in env.items():
+        monkeypatch.setenv(key, val)
+
+
+def test_load_source_lang_override(monkeypatch):
+    _make_load_env(monkeypatch, {"SOURCE_LANG": "ja"})
+    cfg = AppConfig.load()
+    assert cfg.translation.source_language == "ja"
+
+
+def test_load_target_lang_override(monkeypatch):
+    _make_load_env(monkeypatch, {"TARGET_LANG": "fr"})
+    cfg = AppConfig.load()
+    assert cfg.translation.target_language == "fr"
+
+
+def test_load_denoise_true_from_env(monkeypatch):
+    _make_load_env(monkeypatch, {"DENOISE": "true"})
+    cfg = AppConfig.load()
+    assert cfg.translation.denoise is True
+
+
+def test_load_denoise_false_from_env(monkeypatch):
+    _make_load_env(monkeypatch, {"DENOISE": "0"})
+    cfg = AppConfig.load()
+    assert cfg.translation.denoise is False
+
+
+def test_load_dump_audio_flag(monkeypatch):
+    _make_load_env(monkeypatch, {"DUMP_AUDIO": "1"})
+    cfg = AppConfig.load()
+    assert cfg.dump_audio_to_disk is True
+
+
+def test_load_no_overrides_uses_defaults(monkeypatch):
+    _make_load_env(monkeypatch, {})
+    cfg = AppConfig.load()
+    assert cfg.translation.source_language == "zh"
+    assert cfg.translation.target_language == "en"
+    assert cfg.dump_audio_to_disk is False

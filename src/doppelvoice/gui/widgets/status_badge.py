@@ -12,7 +12,6 @@ class StatusBadge(QLabel):
         super().__init__(parent)
         self.setObjectName("statusBadge")
         self.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self._state = "idle"
 
     def set_state(self, state: str, text: str) -> None:
         """state: idle / busy / running / error"""

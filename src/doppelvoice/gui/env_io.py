@@ -17,7 +17,7 @@ def read_env() -> dict[str, str]:
     if not p.exists():
         return {}
     out: dict[str, str] = {}
-    for line in p.read_text(encoding="utf-8").splitlines():
+    for line in p.read_text(encoding="utf-8-sig").splitlines():
         line = line.strip()
         if not line or line.startswith("#"):
             continue
@@ -37,7 +37,7 @@ def write_env(updates: dict[str, str], *, preserve_unknown: bool = True) -> None
     seen_keys: set[str] = set()
 
     if preserve_unknown and p.exists():
-        for line in p.read_text(encoding="utf-8").splitlines():
+        for line in p.read_text(encoding="utf-8-sig").splitlines():
             stripped = line.strip()
             if not stripped or stripped.startswith("#"):
                 existing_lines.append(line)
@@ -63,7 +63,7 @@ def write_env(updates: dict[str, str], *, preserve_unknown: bool = True) -> None
         prefix=".env.", suffix=".tmp", dir=str(p.parent)
     )
     try:
-        with os.fdopen(tmp_fd, "w", encoding="utf-8", newline="") as f:
+        with os.fdopen(tmp_fd, "w", encoding="utf-8-sig", newline="") as f:
             f.write(payload)
             f.flush()
             os.fsync(f.fileno())

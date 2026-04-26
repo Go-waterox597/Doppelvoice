@@ -15,20 +15,40 @@ from loguru import logger
 
 
 class OggOpusDecoder:
-    """累积一句内的 ogg_opus 分片，在 finalize 时解码为 int16 PCM。"""
+    """累积一句内的 ogg_opus 分片，在 finalize 时解码为 int16 PCM。
+
+    防御：服务端如果只发 sentence_start 不发 sentence_end（恶意/bug），
+    `_chunks` 会无界增长致 OOM。`MAX_BUF_BYTES` = 64 MB 上限：超过后强制
+    丢弃所有累积，相当于这句话被服务端"挂起"。正常一句 ogg_opus ≤ ~50 KB，
+    64 MB 留 1000+ 倍冗余。
+    """
+
+    MAX_BUF_BYTES = 64 * 1024 * 1024
 
     def __init__(self) -> None:
         self._chunks: list[bytes] = []
+        self._size: int = 0  # cached running total to avoid sum() on each feed
 
     def feed(self, chunk: bytes) -> None:
-        if chunk:
-            self._chunks.append(chunk)
+        if not chunk:
+            return
+        if self._size + len(chunk) > self.MAX_BUF_BYTES:
+            logger.warning(
+                "opus decoder buffer would exceed {} bytes — dropping {} accumulated chunks "
+                "(server may have stuck mid-sentence)",
+                self.MAX_BUF_BYTES, len(self._chunks),
+            )
+            self._chunks.clear()
+            self._size = 0
+            return
+        self._chunks.append(chunk)
+        self._size += len(chunk)
 
     def has_data(self) -> bool:
         return bool(self._chunks)
 
     def size(self) -> int:
-        return sum(len(c) for c in self._chunks)
+        return self._size
 
     def drain(self, target_sr: int, dump_path: "Path | None" = None) -> bytes:
         """解码累积数据到 int16 mono PCM bytes。调用后内部清空。"""
@@ -36,6 +56,7 @@ class OggOpusDecoder:
             return b""
         blob = b"".join(self._chunks)
         self._chunks = []
+        self._size = 0
 
         # 可选：落盘便于离线分析
         if dump_path is not None:
@@ -79,3 +100,4 @@ class OggOpusDecoder:
 
     def reset(self) -> None:
         self._chunks = []
+        self._size = 0

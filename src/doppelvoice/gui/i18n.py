@@ -45,7 +45,6 @@ TRANSLATIONS: dict[Language, dict[str, str]] = {
         "config.output_device": "虚拟麦输出",
         "config.source_lang": "源语言",
         "config.target_lang": "目标语言",
-        "config.mode": "模式",
         "config.lang.zh": "中文",
         "config.lang.en": "英文",
         "config.lang.ja": "日语",
@@ -59,11 +58,11 @@ TRANSLATIONS: dict[Language, dict[str, str]] = {
         "subtitle.source": "原文",
         "subtitle.target": "译文",
         # stats
-        "stats.latency": "延迟",
-        "stats.buffer": "缓冲",
         "stats.sentences": "句",
         "stats.audio_received": "译音",
         "stats.audio_level": "输入电平",
+        # device tooltip
+        "device.tooltip.backend": "后端",
         # settings dialog
         "settings.title": "设置",
         "settings.tab.api": "API 凭据",
@@ -78,7 +77,6 @@ TRANSLATIONS: dict[Language, dict[str, str]] = {
         "settings.api.test.testing": "测试中…",
         "settings.api.test.ok": "✓ 连接成功，鉴权通过",
         "settings.api.test.fail": "✗ 失败：{error}",
-        "settings.api.show_secret": "显示密钥",
         "settings.audio.chunk_ms": "每包大小 (ms)",
         "settings.audio.jitter_ms": "Jitter buffer (ms)",
         "settings.audio.rms_gate": "静音门限",
@@ -94,19 +92,6 @@ TRANSLATIONS: dict[Language, dict[str, str]] = {
         "settings.save": "保存",
         "settings.cancel": "取消",
         "settings.saved": "设置已保存到 .env",
-        # wizard
-        "wizard.title": "首次启动配置",
-        "wizard.heading": "欢迎使用 Doppelvoice",
-        "wizard.body": (
-            "Doppelvoice 需要豆包同声传译 2.0 的 API 密钥才能工作。\n\n"
-            "1. 访问火山引擎控制台 (console.volcengine.com)\n"
-            "2. 豆包语音 → 同声传译 2.0 → 开通服务\n"
-            "3. 应用管理页面复制 App Key 和 Access Key"
-        ),
-        "wizard.next": "下一步",
-        "wizard.back": "上一步",
-        "wizard.finish": "完成",
-        "wizard.skip": "暂时跳过",
         # error / dialog
         "dialog.confirm_quit": "正在同传中，确认退出？",
         "dialog.error.title": "错误",
@@ -163,7 +148,6 @@ TRANSLATIONS: dict[Language, dict[str, str]] = {
         "config.output_device": "Virtual mic output",
         "config.source_lang": "Source",
         "config.target_lang": "Target",
-        "config.mode": "Mode",
         "config.lang.zh": "Chinese",
         "config.lang.en": "English",
         "config.lang.ja": "Japanese",
@@ -177,11 +161,11 @@ TRANSLATIONS: dict[Language, dict[str, str]] = {
         "subtitle.source": "Source",
         "subtitle.target": "Translation",
         # stats
-        "stats.latency": "Latency",
-        "stats.buffer": "Buffer",
         "stats.sentences": "sent.",
         "stats.audio_received": "Audio",
         "stats.audio_level": "Input level",
+        # device tooltip
+        "device.tooltip.backend": "Backend",
         # settings
         "settings.title": "Settings",
         "settings.tab.api": "API credentials",
@@ -196,7 +180,6 @@ TRANSLATIONS: dict[Language, dict[str, str]] = {
         "settings.api.test.testing": "Testing…",
         "settings.api.test.ok": "✓ Connected — authentication OK",
         "settings.api.test.fail": "✗ Failed: {error}",
-        "settings.api.show_secret": "Show secret",
         "settings.audio.chunk_ms": "Chunk size (ms)",
         "settings.audio.jitter_ms": "Jitter buffer (ms)",
         "settings.audio.rms_gate": "RMS silence gate",
@@ -213,19 +196,6 @@ TRANSLATIONS: dict[Language, dict[str, str]] = {
         "settings.save": "Save",
         "settings.cancel": "Cancel",
         "settings.saved": "Settings saved to .env",
-        # wizard
-        "wizard.title": "First-time setup",
-        "wizard.heading": "Welcome to Doppelvoice",
-        "wizard.body": (
-            "Doppelvoice needs Doubao Simultaneous Interpretation 2.0 credentials to work.\n\n"
-            "1. Sign in at Volcengine Console (console.volcengine.com)\n"
-            "2. Doubao Voice → Simultaneous Interpretation 2.0 → activate service\n"
-            "3. Copy App Key and Access Key from App Management"
-        ),
-        "wizard.next": "Next",
-        "wizard.back": "Back",
-        "wizard.finish": "Finish",
-        "wizard.skip": "Skip for now",
         # dialog
         "dialog.confirm_quit": "A session is running. Quit anyway?",
         "dialog.error.title": "Error",

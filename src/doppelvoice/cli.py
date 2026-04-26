@@ -27,7 +27,7 @@ def _make_parser() -> argparse.ArgumentParser:
     p.add_argument("--target", dest="target_lang", help="目标语言，默认 en")
     p.add_argument("--mode", choices=["s2s", "s2t"], help="翻译模式，默认 s2s")
     p.add_argument("--chunk-ms", type=int, help="每包音频时长，默认 80ms")
-    p.add_argument("--jitter-ms", type=int, help="播放 jitter buffer 毫秒，默认 240")
+    p.add_argument("--jitter-ms", type=int, help="播放 jitter buffer 毫秒，默认 120")
     p.add_argument("--log-level", default=None, help="DEBUG/INFO/WARNING")
     return p
 

@@ -82,6 +82,9 @@ class Orchestrator:
         # 暴露给 GUI 读取 peak_level（替代了之前的独立 mic meter 流）
         self.capture: Optional[MicCapture] = None
         self.playback: Optional[VirtualMicPlayback] = None
+        # 重连计数：在 SessionStarted 后重置（不是 _one_session 完整跑完才重置），
+        # 这样短抖动反复断网时不会指数累积到 30s 黑屏。Receiver loop 会调用 _on_session_started。
+        self._reset_attempt: bool = False
 
     def stop(self) -> None:
         """线程安全：供 GUI / 外部代码触发优雅停机。"""
@@ -120,6 +123,7 @@ class Orchestrator:
         try:
             attempt = 0
             while not self._stop.is_set():
+                self._reset_attempt = False
                 try:
                     await self._one_session(capture_q, playback)
                     attempt = 0  # 成功完整跑完重置退避
@@ -127,7 +131,11 @@ class Orchestrator:
                     logger.error(f"致命错误，不重连：{e}")
                     break
                 except Exception as e:
-                    attempt += 1
+                    if self._reset_attempt:
+                        # SessionStarted 已发生过 → 这次断的是稳定会话，按"新一轮"算
+                        attempt = 1
+                    else:
+                        attempt += 1
                     if self.cfg.network.reconnect_max_retries and attempt > self.cfg.network.reconnect_max_retries:
                         logger.error(f"超过最大重连次数 {self.cfg.network.reconnect_max_retries}，退出")
                         break
@@ -160,6 +168,9 @@ class Orchestrator:
             await client.connect()
             self._emit_status("session_starting", "建立会话…")
             await client.start_session()
+            # SessionStarted 拿到 → 标记本次会话已"稳定"。
+            # 后续若断线，退避计数从 1 起，而不是从上次累加（避免短抖动 → 30s 黑屏）。
+            self._reset_attempt = True
             self._emit_status("running", "运行中")
 
             sender = asyncio.create_task(self._sender_loop(client, capture_q), name="sender")

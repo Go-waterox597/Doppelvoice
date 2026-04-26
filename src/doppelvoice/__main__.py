@@ -10,6 +10,14 @@ import sys
 from doppelvoice.cli import main
 
 if __name__ == "__main__":
+    # Windows 控制台默认 GBK，Python 3.7+ 下 stdout/stderr 默认走 UTF-8 编码会导致
+    # 中文错误消息显示为 mojibake。强制 reconfigure 到 utf-8 让用户看清错误。
+    if sys.platform == "win32":
+        for stream in (sys.stdout, sys.stderr):
+            try:
+                stream.reconfigure(encoding="utf-8", errors="replace")
+            except (AttributeError, ValueError):
+                pass
     if getattr(sys, "frozen", False) and len(sys.argv) == 1:
         sys.argv.append("--gui")
     sys.exit(main())

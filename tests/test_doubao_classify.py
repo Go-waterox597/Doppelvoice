@@ -1,10 +1,10 @@
-"""DoubaoClient._classify 事件分类逻辑单元测试。"""
+"""DoubaoClient._classify + _validate_ws_url 单元测试。"""
 from __future__ import annotations
 
 import pytest
 
 from doppelvoice.config import AppConfig, Credentials
-from doppelvoice.engine.doubao import DoubaoClient
+from doppelvoice.engine.doubao import DoubaoClient, _validate_ws_url
 from doppelvoice.engine.protocol import ast_pb, EventType, STATUS_SUCCESS
 
 
@@ -106,3 +106,24 @@ def test_classify_unknown_event_returns_none(client):
     # 用一个我们没有处理的合法 event 值（如 UpdateConfig 201 不在 _classify 分支里）
     ev = client._classify(_make_resp(EventType.UpdateConfig))
     assert ev is None
+
+
+# ── _validate_ws_url (doubao.py lines 26-38) ─────────────────────────────────
+
+def test_validate_ws_url_accepts_allowed_host():
+    _validate_ws_url("wss://openspeech.bytedance.com/api/v4/ast/v2/translate")
+
+
+def test_validate_ws_url_rejects_http_scheme():
+    with pytest.raises(ValueError, match="wss://"):
+        _validate_ws_url("http://openspeech.bytedance.com/path")
+
+
+def test_validate_ws_url_rejects_ws_scheme():
+    with pytest.raises(ValueError, match="wss://"):
+        _validate_ws_url("ws://openspeech.bytedance.com/path")
+
+
+def test_validate_ws_url_rejects_unknown_host():
+    with pytest.raises(ValueError, match="not in allowed list"):
+        _validate_ws_url("wss://evil.attacker.com/steal")

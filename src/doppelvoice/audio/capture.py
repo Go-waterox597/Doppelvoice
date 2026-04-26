@@ -18,7 +18,7 @@ import sounddevice as sd
 from loguru import logger
 
 from doppelvoice.audio.devices import find_device
-from doppelvoice.audio.resample import resample_int16 as _resample
+from doppelvoice.audio.resample import _HAS_SOXR, resample_int16 as _resample
 from doppelvoice.config import AudioConfig
 
 
@@ -63,7 +63,7 @@ class MicCapture:
         if self._closing.is_set():
             return
         if status:
-            logger.debug(f"capture status: {status}")
+            logger.debug("capture status: {}", status)  # lazy: avoid f-string CPU when DEBUG off
 
         # 取 int16 mono 样本
         samples = np.frombuffer(bytes(indata), dtype=np.int16)

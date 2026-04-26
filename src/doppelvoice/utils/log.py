@@ -11,9 +11,15 @@ _SENTINEL = "***REDACTED***"
 
 # Pass 1：键值对场景。匹配「字段名 + : 或 = + 值」。
 # 字段名匹配带有 key/token/secret/password/authorization 子串的标识符（大小写无关）。
+# 字段名前缀可选（`password=`、`token=` 这类裸关键字也要命中）。
 # 分隔符允许 JSON 风格的 `"key": "value"`：key 末尾可能有 ", : 前后空格, value 前可能有 "。
+# 用 `(?:^|(?<=\W))` 锚定到非词字符之后或行首，避免误吃普通单词中的 "key/token" 子串。
 _KV_PATTERN = re.compile(
-    r"([A-Za-z][\w\-]*?(?:key|token|secret|password|authorization)[\w\-]*)"
+    r"(?:^|(?<=[\W]))"
+    # 字段名：可选前缀 + 关键字 + 可选后缀
+    # 前缀 `(?:[A-Za-z][\w\-]*?)?` 是 optional，所以裸 `password=` / `token=` / `secret=`
+    # 也能命中（之前强制 `[A-Za-z]` 第一字符导致这类裸关键字漏检）
+    r"((?:[A-Za-z][\w\-]*?)?(?:key|token|secret|password|authorization)[\w\-]*)"
     r'(["\']?\s*[:=]\s*["\']?)'
     r"([^\s\"',;}\]\[]+)",
     re.IGNORECASE,

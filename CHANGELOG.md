@@ -7,6 +7,117 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-04-26
+
+20-agent adversarial sweep (architect / security / performance / Python /
+code-review / refactor / docs / tdd / first-install UX / 24h stability /
+cross-platform / dep audit / concurrency / WS protocol / audio math /
+error UX / dist UX / i18n / malicious-server / .env edges). 86 tests
+(was 46) — coverage 14% → 24%. **No public API changes.**
+
+### Fixed
+- **CRITICAL** `audio/capture.py` referenced `_HAS_SOXR` without importing
+  it — `NameError` on every sample-rate-mismatch path, silently breaking
+  capture when the device's native rate ≠ 16 kHz.
+- **CRITICAL** `audio/opus_decoder.py` had **unbounded `_chunks` growth**
+  when the server emitted `TTSSentenceStart` without ever sending
+  `TTSSentenceEnd` (malicious or stuck server). Now hard-capped at 64 MB
+  with a warning + drop. `size()` is O(1) (cached).
+- **CRITICAL** `gui/env_io.py` opened `.env` as `utf-8` strict — Windows
+  Notepad's default "UTF-8" save adds a BOM, which made the GUI think
+  it had loaded a key named `"\ufeffDOUBAO_APP_KEY"` while runtime got
+  none. Now uses `utf-8-sig` to strip the BOM transparently.
+- **HIGH** `utils/log.py` `_KV_PATTERN` could not redact bare-keyword
+  fields like `password=`, `secret=`, `token=` because the leading
+  `[A-Za-z]` always consumed the first character — by the time the
+  regex engine tried to match the keyword, it was already past `p`.
+  Made the prefix optional.
+- **HIGH** `gui/main_window.py` status badge displayed the literal string
+  `"status.busy"` after a language switch because `_apply_translations`
+  reverse-looked up the i18n key from the mapped state value
+  (`busy`/`running`/`error`) instead of the original key (`connecting`,
+  `opening_audio`, etc.). Now stores the original key as a Qt property
+  and reads that on language change.
+- **HIGH** `audio/resample.py` linear fallback returned the **input
+  array** unchanged when `n_out == 0` (very short buffer + heavy
+  downsample) — downstream consumed it at the wrong sample rate without
+  any error. Now returns an empty `int16` array.
+- **HIGH** `pipeline/orchestrator.py` reconnect counter only reset after
+  `_one_session()` ran to completion. Reflective WiFi flapping
+  (5+ short drops before any session stabilized) caused exponential
+  backoff to climb to the 30-second cap, locking the user out of audio
+  for 30s at a time. Now resets the counter as soon as `SessionStarted`
+  is acknowledged — i.e., once the session is "stable", any subsequent
+  drop counts as a fresh attempt #1.
+- **HIGH** `gui/main_window.py` `closeEvent` did not stop
+  `_metrics_timer` first, leaving a 150 ms window where `_tick_metrics`
+  could read `orchestrator.capture` after `capture.stop()` had run.
+- **HIGH** `gui/main_window.py` Settings menu (Ctrl+,) was **not**
+  disabled while a session was running, so users could change `chunk_ms`
+  / `output_format` / etc. mid-session and watch a "saved" toast appear
+  while the running orchestrator (which holds an immutable `snapshot()`)
+  silently ignored the change. Now `act_settings` is gated like the
+  toolbar Settings button.
+- **MEDIUM** `cli.py` help text for `--jitter-ms` said "默认 240" but the
+  actual default has been 120 since v0.2.0.
+
+### Added
+- **`__post_init__` validation** on `AudioConfig` and `NetworkConfig`:
+  catches negative / zero `chunk_ms`, `input_sample_rate`, `channels`
+  not in `(1, 2)`, etc., at construction time with a clear `ValueError`
+  instead of letting PortAudio surface a cryptic `-9997` 200 ms later.
+- **VB-Cable startup pre-check** in `gui/app.py`: if no `CABLE Input`
+  output device is found, the (already-translated) "Virtual audio
+  device missing" dialog now actually fires. Previously the i18n keys
+  existed but were never wired up.
+- **`THIRD_PARTY_LICENSES.md`**: enumerates every bundled native
+  library and its license. PyInstaller spec now copies `LICENSE` and
+  `THIRD_PARTY_LICENSES.md` into `dist/Doppelvoice/` so end-users
+  receive LGPL-required notices for PySide6 (Qt 6), libsoxr, and
+  libsndfile alongside the binary.
+- **Bilingual `.env.example`** with explicit "App Key vs Access Token"
+  guidance — first-install UX review confirmed users routinely swap
+  the two fields.
+- **Lazy log formatting** in `audio/capture.py`: `logger.debug("...{}",
+  status)` instead of f-string. f-strings eager-evaluate even when the
+  level is filtered, costing ~1-2% CPU on a 12.5 Hz audio callback.
+
+### Changed
+- `requirements.txt` now pins **upper bounds** (`numpy<3`,
+  `websockets<17`, `protobuf<7`, `soxr<2`, `PySide6<7`) plus the new
+  `soundfile` dep that was implicit before. `grpcio-tools` removed
+  from runtime deps (it's only needed to regenerate `*_pb2.py` from
+  `.proto`); already in `[project.optional-dependencies].dev`.
+- `gui/i18n.py`: removed 11 dead translation keys (`wizard.*` (7),
+  `config.mode`, `stats.latency`, `stats.buffer`, `settings.api.show_secret`).
+  Wizard never had a class wiring them; the others were stat labels
+  the GUI never displayed. Added `device.tooltip.backend` and switched
+  the device-list tooltip from hardcoded "后端" to the i18n key.
+- `gui/bus.py`: removed `metrics` and `usage` signals — declared but
+  never connected to any slot.
+- `gui/widgets/status_badge.py`: removed unused `_state` attribute.
+- `pyproject.toml` / `__init__.py` bumped to `0.2.2`.
+
+### Tests
+- New: `tests/test_env_io.py` (read/write atomic env), `tests/test_opus_decoder.py`
+  (feed/drain/reset/empty/garbage), `tests/test_orchestrator_units.py`
+  (`_drain_queue`, `_handle_*` handlers, `_FatalRemote`).
+- Expanded: `tests/test_doubao_classify.py` adds `_validate_ws_url` allowlist
+  cases; `tests/test_config.py` adds `AppConfig.load` env-var override
+  matrix.
+- 46 → **86 tests**, coverage 14% → 24%. (GUI modules remain at 0% —
+  Qt requires `pytest-qt` + an offscreen platform plugin to test.)
+
+### Known limits not yet fixed (deferred — see review reports for owner ↔ ROI)
+- **OpenSSL 3.2.4 in bundle** has CVE-2024-12797 (HIGH, raw-public-key
+  TLS bypass — not exploitable in our use of cert-based WSS, but the
+  DLLs are still old). Will be picked up automatically on next Python
+  3.12.x point release.
+- 24-hour memory growth via `SubtitleView`'s 2000-block FIFO and
+  PySide6 layout cache — irrelevant for typical meeting sessions.
+- Voice-clone "tone shift" on every reconnect (server re-samples
+  zero-shot voice profile per session). Pending Doubao API research.
+
 ## [0.2.1] - 2026-04-26
 
 Metadata + tooling clean-up surfaced by post-release audit.

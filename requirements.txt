@@ -1,10 +1,13 @@
-websockets>=12.0
-sounddevice>=0.4.6
-numpy>=1.24
-python-dotenv>=1.0
-loguru>=0.7
-soxr>=0.3; platform_system != "Emscripten"
-protobuf>=5.0
-grpcio-tools>=1.60
-PySide6>=6.6
-qasync>=0.27
+# Runtime dependencies (frozen lower + upper bounds to avoid silent major bumps).
+# For dev tooling (pytest, pyinstaller, grpcio-tools) install:
+#   pip install -e ".[dev]"
+websockets>=14,<17
+sounddevice>=0.4.6,<1
+soundfile>=0.12,<1
+numpy>=2.0,<3
+python-dotenv>=1.0,<2
+loguru>=0.7,<1
+soxr>=1.0,<2 ; platform_system != "Emscripten"
+protobuf>=6,<7
+PySide6>=6.6,<7
+qasync>=0.27,<1

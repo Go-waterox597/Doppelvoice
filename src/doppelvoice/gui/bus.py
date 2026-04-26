@@ -16,10 +16,10 @@ class GuiEventBus(QObject):
     status = Signal(str, str)  # status_key, human message
     # arbitrary error
     error = Signal(str)
-    # metrics: capture_q, buffer_ms, drops
-    metrics = Signal(dict)
-    # usage info
-    usage = Signal(str)
+
+    # NOTE: 该总线必须在 GUI 主线程构造（main_window.__init__ 里 ✓）。
+    # qasync 把 asyncio loop 跑在 Qt 主线程，emit 都是 Direct Connection；
+    # 若未来 orchestrator 移到独立线程，emit 自动走 Queued Connection 仍安全。
 
     def emit_event(self, ev: TranslationEvent) -> None:
         """Orchestrator 调用：把 TranslationEvent 分发到对应 signal。"""
@@ -31,8 +31,6 @@ class GuiEventBus(QObject):
             self.audio_received.emit(len(ev.audio))
         elif ev.kind == "error":
             self.error.emit(f"code={ev.status_code} msg={ev.message}")
-        elif ev.kind == "usage":
-            self.usage.emit(str(ev.message or ""))
 
     # 兼容 EventBus Protocol
     def emit(self, ev: TranslationEvent) -> None:

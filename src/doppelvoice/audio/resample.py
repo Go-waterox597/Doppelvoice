@@ -25,7 +25,9 @@ def resample_int16(pcm_int16: np.ndarray, src_sr: int, dst_sr: int) -> np.ndarra
         return np.clip(out * 32768.0, -32768, 32767).astype(np.int16)
     n_out = int(len(pcm_int16) * dst_sr / src_sr)
     if n_out <= 0:
-        return pcm_int16
+        # 输入太短无法生成任何输出 sample —— 返回空数组而非原数组（避免下游
+        # 以为这是合法的目标率 PCM 处理出错率音频）
+        return np.array([], dtype=np.int16)
     x = np.linspace(0, len(pcm_int16) - 1, n_out)
     return np.interp(x, np.arange(len(pcm_int16)), pcm_int16).astype(np.int16)
 

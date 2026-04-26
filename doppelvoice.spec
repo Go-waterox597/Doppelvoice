@@ -25,7 +25,11 @@ block_cipher = None
 # ── 数据 / 二进制依赖 ─────────────────────────────────────────────────────
 
 binaries = []
-datas = []
+datas = [
+    # LGPL 合规：dist 必须包含 LICENSE + 第三方 license 列表，便于用户拿到分发包后查阅
+    ("LICENSE", "."),
+    ("THIRD_PARTY_LICENSES.md", "."),
+]
 
 # PortAudio：sounddevice 通过 _sounddevice_data 找 libportaudio*.dll
 binaries += collect_dynamic_libs("_sounddevice_data")
