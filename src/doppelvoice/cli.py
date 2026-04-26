@@ -101,7 +101,11 @@ def main() -> int:
     try:
         cfg = AppConfig.load()
     except RuntimeError as e:
-        print(f"[配置错误] {e}", file=sys.stderr)
+        # PyInstaller windowed bundle (onefile + console=False) 下 stdio 是 None；
+        # print(..., file=None) 会抛 AttributeError → exe 直接崩没消息。
+        # 正常 cmd 启动时 sys.stderr 是真 TTY，正常输出。
+        if sys.stderr is not None:
+            print(f"[配置错误] {e}", file=sys.stderr)
         return 2
 
     _apply_overrides(cfg, args)

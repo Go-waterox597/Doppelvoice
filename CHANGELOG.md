@@ -7,6 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.3] - 2026-04-26
+
+**Defense-in-depth follow-up to the v0.3.2 hotfix.** v0.3.2 fixed the
+specific `logger.add(None, ...)` crash, but a static sweep found another
+identical-shape vulnerability and the bundle still had no last-resort
+handler for *any* unhandled exception escaping `main()`. v0.3.3 plugs
+both holes so a future regression of the same family ("stdio is None in
+windowed bundle") still leaves the user with a friendly Qt dialog and a
+crash log on disk — never the opaque PyInstaller "Unhandled exception
+in script" box again.
+
+### Fixed
+- `cli.py main()`: `print(f"[配置错误] {e}", file=sys.stderr)` had the
+  same `sys.stderr is None` failure mode as v0.3.2's logger crash. A
+  user with a malformed/missing `.env` would have triggered it. Now
+  guarded.
+
+### Added
+- `__main__.py`: installed `sys.excepthook = _last_resort_handle`. Any
+  uncaught exception now (1) writes a timestamped traceback to
+  `%APPDATA%\Doppelvoice\logs\crash.log` and (2) shows a Qt
+  `QMessageBox.critical` with the tail of the trace and the log path.
+  Falls back gracefully if Qt itself is unavailable.
+
+### Tests
+- `test_log_redact.py` already covers None-stderr `setup_logging` (added
+  in v0.3.2). No new tests this release — the additions are pure
+  belt-and-suspenders.
+
+### Verified
+- End-to-end smoke test from a fresh extraction directory (not the
+  project root): GUI double-click launches cleanly, `--help` shows the
+  9-language description, `--check` without `.env` exits 2 with the
+  Chinese friendly error. No `crash.log` produced under any path.
+
 ## [0.3.2] - 2026-04-26
 
 **Critical hotfix.** v0.3.0 / v0.3.1 binaries crashed at startup with
